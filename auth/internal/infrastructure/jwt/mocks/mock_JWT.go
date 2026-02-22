@@ -95,3 +95,63 @@ func (_c *JWT_GenerateAccessToken_Call) RunAndReturn(run func(user1 user.User) (
 	_c.Call.Return(run)
 	return _c
 }
+
+// ValidateAccessToken provides a mock function for the type JWT
+func (_mock *JWT) ValidateAccessToken(tokenString string) (user.AuthClaims, error) {
+	ret := _mock.Called(tokenString)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ValidateAccessToken")
+	}
+
+	var r0 user.AuthClaims
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(string) (user.AuthClaims, error)); ok {
+		return returnFunc(tokenString)
+	}
+	if returnFunc, ok := ret.Get(0).(func(string) user.AuthClaims); ok {
+		r0 = returnFunc(tokenString)
+	} else {
+		r0 = ret.Get(0).(user.AuthClaims)
+	}
+	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
+		r1 = returnFunc(tokenString)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// JWT_ValidateAccessToken_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ValidateAccessToken'
+type JWT_ValidateAccessToken_Call struct {
+	*mock.Call
+}
+
+// ValidateAccessToken is a helper method to define mock.On call
+//   - tokenString string
+func (_e *JWT_Expecter) ValidateAccessToken(tokenString interface{}) *JWT_ValidateAccessToken_Call {
+	return &JWT_ValidateAccessToken_Call{Call: _e.mock.On("ValidateAccessToken", tokenString)}
+}
+
+func (_c *JWT_ValidateAccessToken_Call) Run(run func(tokenString string)) *JWT_ValidateAccessToken_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *JWT_ValidateAccessToken_Call) Return(authClaims user.AuthClaims, err error) *JWT_ValidateAccessToken_Call {
+	_c.Call.Return(authClaims, err)
+	return _c
+}
+
+func (_c *JWT_ValidateAccessToken_Call) RunAndReturn(run func(tokenString string) (user.AuthClaims, error)) *JWT_ValidateAccessToken_Call {
+	_c.Call.Return(run)
+	return _c
+}

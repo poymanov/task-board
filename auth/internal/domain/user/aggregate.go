@@ -15,3 +15,11 @@ func NewNewUser(email, password, username string) NewUser {
 		Username: username,
 	}
 }
+
+type AuthClaims struct {
+	UserId int
+
+	Email string
+
+	Username string
+}

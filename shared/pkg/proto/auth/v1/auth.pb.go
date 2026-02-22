@@ -224,6 +224,115 @@ func (x *UserServiceLoginResponse) GetAccessToken() string {
 	return ""
 }
 
+// Запрос на проверку пользователя
+type UserServiceWhoamiRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserServiceWhoamiRequest) Reset() {
+	*x = UserServiceWhoamiRequest{}
+	mi := &file_auth_v1_auth_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserServiceWhoamiRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserServiceWhoamiRequest) ProtoMessage() {}
+
+func (x *UserServiceWhoamiRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_v1_auth_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserServiceWhoamiRequest.ProtoReflect.Descriptor instead.
+func (*UserServiceWhoamiRequest) Descriptor() ([]byte, []int) {
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UserServiceWhoamiRequest) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+// Ответ на проверку пользователя
+type UserServiceWhoamiResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// ID пользователя
+	UserId int64 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	// Email пользователя
+	Email string `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	// Имя пользователя
+	Username      string `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserServiceWhoamiResponse) Reset() {
+	*x = UserServiceWhoamiResponse{}
+	mi := &file_auth_v1_auth_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserServiceWhoamiResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserServiceWhoamiResponse) ProtoMessage() {}
+
+func (x *UserServiceWhoamiResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_v1_auth_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserServiceWhoamiResponse.ProtoReflect.Descriptor instead.
+func (*UserServiceWhoamiResponse) Descriptor() ([]byte, []int) {
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *UserServiceWhoamiResponse) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *UserServiceWhoamiResponse) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *UserServiceWhoamiResponse) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
 var File_auth_v1_auth_proto protoreflect.FileDescriptor
 
 const file_auth_v1_auth_proto_rawDesc = "" +
@@ -238,10 +347,17 @@ const file_auth_v1_auth_proto_rawDesc = "" +
 	"\x05email\x18\x01 \x01(\tB\a\xfaB\x04r\x02`\x01R\x05email\x12#\n" +
 	"\bpassword\x18\x02 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\bpassword\"=\n" +
 	"\x18UserServiceLoginResponse\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken2\xb2\x01\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\"F\n" +
+	"\x18UserServiceWhoamiRequest\x12*\n" +
+	"\faccess_token\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\vaccessToken\"f\n" +
+	"\x19UserServiceWhoamiResponse\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x14\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
+	"\busername\x18\x03 \x01(\tR\busername2\x83\x02\n" +
 	"\vUserService\x12U\n" +
 	"\bRegister\x12#.auth.v1.UserServiceRegisterRequest\x1a$.auth.v1.UserServiceRegisterResponse\x12L\n" +
-	"\x05Login\x12 .auth.v1.UserServiceLoginRequest\x1a!.auth.v1.UserServiceLoginResponseBDZBgithub.com/poymanov/codemania-task-board/pkg/proto/auth/v1;auth_v1b\x06proto3"
+	"\x05Login\x12 .auth.v1.UserServiceLoginRequest\x1a!.auth.v1.UserServiceLoginResponse\x12O\n" +
+	"\x06Whoami\x12!.auth.v1.UserServiceWhoamiRequest\x1a\".auth.v1.UserServiceWhoamiResponseBDZBgithub.com/poymanov/codemania-task-board/pkg/proto/auth/v1;auth_v1b\x06proto3"
 
 var (
 	file_auth_v1_auth_proto_rawDescOnce sync.Once
@@ -256,21 +372,26 @@ func file_auth_v1_auth_proto_rawDescGZIP() []byte {
 }
 
 var (
-	file_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+	file_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 	file_auth_v1_auth_proto_goTypes  = []any{
 		(*UserServiceRegisterRequest)(nil),  // 0: auth.v1.UserServiceRegisterRequest
 		(*UserServiceRegisterResponse)(nil), // 1: auth.v1.UserServiceRegisterResponse
 		(*UserServiceLoginRequest)(nil),     // 2: auth.v1.UserServiceLoginRequest
 		(*UserServiceLoginResponse)(nil),    // 3: auth.v1.UserServiceLoginResponse
+		(*UserServiceWhoamiRequest)(nil),    // 4: auth.v1.UserServiceWhoamiRequest
+		(*UserServiceWhoamiResponse)(nil),   // 5: auth.v1.UserServiceWhoamiResponse
 	}
 )
+
 var file_auth_v1_auth_proto_depIdxs = []int32{
 	0, // 0: auth.v1.UserService.Register:input_type -> auth.v1.UserServiceRegisterRequest
 	2, // 1: auth.v1.UserService.Login:input_type -> auth.v1.UserServiceLoginRequest
-	1, // 2: auth.v1.UserService.Register:output_type -> auth.v1.UserServiceRegisterResponse
-	3, // 3: auth.v1.UserService.Login:output_type -> auth.v1.UserServiceLoginResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	4, // 2: auth.v1.UserService.Whoami:input_type -> auth.v1.UserServiceWhoamiRequest
+	1, // 3: auth.v1.UserService.Register:output_type -> auth.v1.UserServiceRegisterResponse
+	3, // 4: auth.v1.UserService.Login:output_type -> auth.v1.UserServiceLoginResponse
+	5, // 5: auth.v1.UserService.Whoami:output_type -> auth.v1.UserServiceWhoamiResponse
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -287,7 +408,7 @@ func file_auth_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_v1_auth_proto_rawDesc), len(file_auth_v1_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

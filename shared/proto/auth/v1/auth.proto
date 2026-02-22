@@ -9,6 +9,7 @@ option go_package = "github.com/poymanov/codemania-task-board/pkg/proto/auth/v1;
 service UserService {
   rpc Register(UserServiceRegisterRequest) returns (UserServiceRegisterResponse);
   rpc Login(UserServiceLoginRequest) returns (UserServiceLoginResponse);
+  rpc Whoami(UserServiceWhoamiRequest) returns (UserServiceWhoamiResponse);
 }
 
 // Запрос на регистрацию пользователя
@@ -40,4 +41,20 @@ message UserServiceLoginRequest {
 // Ответ на аутентификацию пользователя
 message UserServiceLoginResponse {
   string access_token = 1;
+}
+// Запрос на проверку пользователя
+message UserServiceWhoamiRequest {
+  string access_token = 1 [(validate.rules).string = {min_len: 1}];
+}
+
+// Ответ на проверку пользователя
+message UserServiceWhoamiResponse {
+  // ID пользователя
+  int64 user_id = 1;
+
+  // Email пользователя
+  string email = 2;
+
+  // Имя пользователя
+  string username = 3;
 }

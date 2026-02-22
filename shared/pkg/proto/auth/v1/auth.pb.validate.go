@@ -602,3 +602,224 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = UserServiceLoginResponseValidationError{}
+
+// Validate checks the field values on UserServiceWhoamiRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UserServiceWhoamiRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserServiceWhoamiRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UserServiceWhoamiRequestMultiError, or nil if none found.
+func (m *UserServiceWhoamiRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserServiceWhoamiRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetAccessToken()) < 1 {
+		err := UserServiceWhoamiRequestValidationError{
+			field:  "AccessToken",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return UserServiceWhoamiRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UserServiceWhoamiRequestMultiError is an error wrapping multiple validation
+// errors returned by UserServiceWhoamiRequest.ValidateAll() if the designated
+// constraints aren't met.
+type UserServiceWhoamiRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserServiceWhoamiRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserServiceWhoamiRequestMultiError) AllErrors() []error { return m }
+
+// UserServiceWhoamiRequestValidationError is the validation error returned by
+// UserServiceWhoamiRequest.Validate if the designated constraints aren't met.
+type UserServiceWhoamiRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserServiceWhoamiRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserServiceWhoamiRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserServiceWhoamiRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserServiceWhoamiRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserServiceWhoamiRequestValidationError) ErrorName() string {
+	return "UserServiceWhoamiRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UserServiceWhoamiRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserServiceWhoamiRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserServiceWhoamiRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserServiceWhoamiRequestValidationError{}
+
+// Validate checks the field values on UserServiceWhoamiResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UserServiceWhoamiResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserServiceWhoamiResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UserServiceWhoamiResponseMultiError, or nil if none found.
+func (m *UserServiceWhoamiResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserServiceWhoamiResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserId
+
+	// no validation rules for Email
+
+	// no validation rules for Username
+
+	if len(errors) > 0 {
+		return UserServiceWhoamiResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// UserServiceWhoamiResponseMultiError is an error wrapping multiple validation
+// errors returned by UserServiceWhoamiResponse.ValidateAll() if the
+// designated constraints aren't met.
+type UserServiceWhoamiResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserServiceWhoamiResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserServiceWhoamiResponseMultiError) AllErrors() []error { return m }
+
+// UserServiceWhoamiResponseValidationError is the validation error returned by
+// UserServiceWhoamiResponse.Validate if the designated constraints aren't met.
+type UserServiceWhoamiResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserServiceWhoamiResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserServiceWhoamiResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserServiceWhoamiResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserServiceWhoamiResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserServiceWhoamiResponseValidationError) ErrorName() string {
+	return "UserServiceWhoamiResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UserServiceWhoamiResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserServiceWhoamiResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserServiceWhoamiResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserServiceWhoamiResponseValidationError{}

@@ -18,6 +18,7 @@ import (
 	transportUserV1 "github.com/poymanov/codemania-task-board/auth/internal/transport/grpc/auth/v1/user"
 	loginUseCase "github.com/poymanov/codemania-task-board/auth/internal/usecase/user/login"
 	registerUserUseCase "github.com/poymanov/codemania-task-board/auth/internal/usecase/user/register"
+	whoamiUseCase "github.com/poymanov/codemania-task-board/auth/internal/usecase/user/whoami"
 	"github.com/poymanov/codemania-task-board/platform/pkg/grpc/health"
 	"github.com/poymanov/codemania-task-board/platform/pkg/logger"
 	"github.com/poymanov/codemania-task-board/platform/pkg/migrator"
@@ -205,8 +206,9 @@ func (a *App) runGrpcServer() {
 
 	ruuc := registerUserUseCase.NewUseCase(ur)
 	luc := loginUseCase.NewUseCase(ur, js)
+	wuc := whoamiUseCase.NewUseCase(js)
 
-	userService := transportUserV1.NewService(ruuc, luc)
+	userService := transportUserV1.NewService(ruuc, luc, wuc)
 
 	s := grpc.NewServer()
 
