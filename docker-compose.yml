@@ -18,11 +18,38 @@ services:
     ports:
       - "${EXTERNAL_POSTGRES_BOARD_PORT}:5432"
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_BOARD_PASSWORD}
       POSTGRES_USER: ${POSTGRES_BOARD_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_BOARD_PASSWORD}
       POSTGRES_DB: ${POSTGRES_BOARD_DB}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_BOARD_USER} -d ${POSTGRES_BOARD_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  auth:
+    build:
+      context: .
+      dockerfile: docker/auth/Dockerfile
+    ports:
+      - ${AUTH_GRPC_EXTERNAL_PORT}:${AUTH_GRPC_PORT}
+    volumes:
+      - '.:/app'
+    command: ["go", "run", "auth/cmd/main.go"]
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+  postgres-auth:
+    image: postgres:17.0-alpine3.20
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+    ports:
+      - "${EXTERNAL_POSTGRES_AUTH_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_AUTH_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_AUTH_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_AUTH_DB}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_AUTH_USER} -d ${POSTGRES_AUTH_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -37,6 +64,7 @@ services:
     command: ["go", "run", "gateway/cmd/main.go"]
 volumes:
   postgres_board_data:
+  postgres_auth_data:
 networks:
   default:
     name: docker

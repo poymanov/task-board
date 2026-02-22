@@ -28,7 +28,7 @@ vars:
 
   OPEN_API_FILES: '{{.ROOT_DIR}}/shared/api/'
 
-  MODULES: board platform shared gateway
+  MODULES: board platform shared gateway auth
 
 tasks:
   install-formatters:
