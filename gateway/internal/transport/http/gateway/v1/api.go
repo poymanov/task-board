@@ -4,17 +4,51 @@ import (
 	"context"
 	"net/http"
 
-	createBoardUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/create"
+	boardCreateUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/create"
+	boardGetAllUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/get_all"
+	boardGetBoardUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/get_board"
+	columnCreateUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/column/create"
+	columnDeleteUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/column/delete"
+	columnUpdatePositionUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/column/update_position"
+	taskCreateUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/create"
+	taskDeleteUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/delete"
+	taskUpdatePositionUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/update_position"
 	gatewayV1 "github.com/poymanov/codemania-task-board/shared/pkg/openapi/gateway/v1"
 )
 
 type Api struct {
-	createBoardUseCase *createBoardUseCase.UseCase
+	boardCreateUseCase          *boardCreateUseCase.UseCase
+	boardGetAllUseCase          *boardGetAllUseCase.UseCase
+	columnCreateUseCase         *columnCreateUseCase.UseCase
+	columnDeleteUseCase         *columnDeleteUseCase.UseCase
+	columnUpdatePositionUseCase *columnUpdatePositionUseCase.UseCase
+	taskCreateUseCase           *taskCreateUseCase.UseCase
+	taskDeleteUseCase           *taskDeleteUseCase.UseCase
+	taskUpdatePositionUseCase   *taskUpdatePositionUseCase.UseCase
+	boardGetBoardUseCase        *boardGetBoardUseCase.UseCase
 }
 
-func NewApi(createBoardUseCase *createBoardUseCase.UseCase) *Api {
+func NewApi(
+	boardCreateUseCase *boardCreateUseCase.UseCase,
+	boardGetAllUseCase *boardGetAllUseCase.UseCase,
+	columnCreateUseCase *columnCreateUseCase.UseCase,
+	columnDeleteUseCase *columnDeleteUseCase.UseCase,
+	columnUpdatePositionUseCase *columnUpdatePositionUseCase.UseCase,
+	taskCreateUseCase *taskCreateUseCase.UseCase,
+	taskDeleteUseCase *taskDeleteUseCase.UseCase,
+	taskUpdatePositionUseCase *taskUpdatePositionUseCase.UseCase,
+	boardGetBoardUseCase *boardGetBoardUseCase.UseCase,
+) *Api {
 	return &Api{
-		createBoardUseCase: createBoardUseCase,
+		boardCreateUseCase:          boardCreateUseCase,
+		boardGetAllUseCase:          boardGetAllUseCase,
+		columnCreateUseCase:         columnCreateUseCase,
+		columnDeleteUseCase:         columnDeleteUseCase,
+		columnUpdatePositionUseCase: columnUpdatePositionUseCase,
+		taskCreateUseCase:           taskCreateUseCase,
+		taskDeleteUseCase:           taskDeleteUseCase,
+		taskUpdatePositionUseCase:   taskUpdatePositionUseCase,
+		boardGetBoardUseCase:        boardGetBoardUseCase,
 	}
 }
 

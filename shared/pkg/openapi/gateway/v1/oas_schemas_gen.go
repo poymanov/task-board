@@ -38,7 +38,53 @@ func (s *BadRequestError) SetMessage(val string) {
 	s.Message = val
 }
 
-func (*BadRequestError) boardCreateRes() {}
+func (*BadRequestError) boardCreateRes()          {}
+func (*BadRequestError) boardGetAllRes()          {}
+func (*BadRequestError) boardGetRes()             {}
+func (*BadRequestError) columnCreateRes()         {}
+func (*BadRequestError) columnDeleteRes()         {}
+func (*BadRequestError) columnUpdatePositionRes() {}
+func (*BadRequestError) taskCreateRes()           {}
+func (*BadRequestError) taskDeleteRes()           {}
+func (*BadRequestError) taskUpdatePositionRes()   {}
+
+// ColumnDeleteNoContent is response for ColumnDelete operation.
+type ColumnDeleteNoContent struct{}
+
+func (*ColumnDeleteNoContent) columnDeleteRes() {}
+
+// ColumnUpdatePositionNoContent is response for ColumnUpdatePosition operation.
+type ColumnUpdatePositionNoContent struct{}
+
+func (*ColumnUpdatePositionNoContent) columnUpdatePositionRes() {}
+
+// Ref: #/components/schemas/ColumnUpdatePositionRequestBody
+type ColumnUpdatePositionRequestBody struct {
+	// Номер позиции слева.
+	LeftPosition float64 `json:"left_position"`
+	// Номер позиции справа.
+	RightPosition float64 `json:"right_position"`
+}
+
+// GetLeftPosition returns the value of LeftPosition.
+func (s *ColumnUpdatePositionRequestBody) GetLeftPosition() float64 {
+	return s.LeftPosition
+}
+
+// GetRightPosition returns the value of RightPosition.
+func (s *ColumnUpdatePositionRequestBody) GetRightPosition() float64 {
+	return s.RightPosition
+}
+
+// SetLeftPosition sets the value of LeftPosition.
+func (s *ColumnUpdatePositionRequestBody) SetLeftPosition(val float64) {
+	s.LeftPosition = val
+}
+
+// SetRightPosition sets the value of RightPosition.
+func (s *ColumnUpdatePositionRequestBody) SetRightPosition(val float64) {
+	s.RightPosition = val
+}
 
 // Ref: #/components/schemas/CreateBoardRequestBody
 type CreateBoardRequestBody struct {
@@ -98,6 +144,40 @@ func (s *CreateBoardResponse) SetBoardID(val int) {
 
 func (*CreateBoardResponse) boardCreateRes() {}
 
+// Ref: #/components/schemas/CreateColumnRequestBody
+type CreateColumnRequestBody struct {
+	// Название колонки.
+	Name string `json:"name"`
+}
+
+// GetName returns the value of Name.
+func (s *CreateColumnRequestBody) GetName() string {
+	return s.Name
+}
+
+// SetName sets the value of Name.
+func (s *CreateColumnRequestBody) SetName(val string) {
+	s.Name = val
+}
+
+// Ref: #/components/schemas/CreateColumnResponse
+type CreateColumnResponse struct {
+	// ID созданной колонки.
+	ColumnID int `json:"column_id"`
+}
+
+// GetColumnID returns the value of ColumnID.
+func (s *CreateColumnResponse) GetColumnID() int {
+	return s.ColumnID
+}
+
+// SetColumnID sets the value of ColumnID.
+func (s *CreateColumnResponse) SetColumnID(val int) {
+	s.ColumnID = val
+}
+
+func (*CreateColumnResponse) columnCreateRes() {}
+
 // Ref: #/components/schemas/GenericError
 type GenericError struct {
 	// HTTP-код ошибки.
@@ -152,6 +232,230 @@ func (s *GenericErrorStatusCode) SetResponse(val GenericError) {
 	s.Response = val
 }
 
+type GetAllBoardResponse []GetAllBoardResponseItem
+
+func (*GetAllBoardResponse) boardGetAllRes() {}
+
+type GetAllBoardResponseItem struct {
+	// ID доски.
+	ID int `json:"id"`
+	// Название доски.
+	Name string `json:"name"`
+	// Описание доски.
+	Description string `json:"description"`
+}
+
+// GetID returns the value of ID.
+func (s *GetAllBoardResponseItem) GetID() int {
+	return s.ID
+}
+
+// GetName returns the value of Name.
+func (s *GetAllBoardResponseItem) GetName() string {
+	return s.Name
+}
+
+// GetDescription returns the value of Description.
+func (s *GetAllBoardResponseItem) GetDescription() string {
+	return s.Description
+}
+
+// SetID sets the value of ID.
+func (s *GetAllBoardResponseItem) SetID(val int) {
+	s.ID = val
+}
+
+// SetName sets the value of Name.
+func (s *GetAllBoardResponseItem) SetName(val string) {
+	s.Name = val
+}
+
+// SetDescription sets the value of Description.
+func (s *GetAllBoardResponseItem) SetDescription(val string) {
+	s.Description = val
+}
+
+// Ref: #/components/schemas/GetBoardResponse
+type GetBoardResponse struct {
+	// ID доски.
+	ID int `json:"id"`
+	// Название доски.
+	Name string `json:"name"`
+	// Описание доски.
+	Description string `json:"description"`
+	// Владелец доски.
+	OwnerID int `json:"owner_id"`
+	// Список колонок.
+	Columns []GetBoardResponseColumnsItem `json:"columns"`
+}
+
+// GetID returns the value of ID.
+func (s *GetBoardResponse) GetID() int {
+	return s.ID
+}
+
+// GetName returns the value of Name.
+func (s *GetBoardResponse) GetName() string {
+	return s.Name
+}
+
+// GetDescription returns the value of Description.
+func (s *GetBoardResponse) GetDescription() string {
+	return s.Description
+}
+
+// GetOwnerID returns the value of OwnerID.
+func (s *GetBoardResponse) GetOwnerID() int {
+	return s.OwnerID
+}
+
+// GetColumns returns the value of Columns.
+func (s *GetBoardResponse) GetColumns() []GetBoardResponseColumnsItem {
+	return s.Columns
+}
+
+// SetID sets the value of ID.
+func (s *GetBoardResponse) SetID(val int) {
+	s.ID = val
+}
+
+// SetName sets the value of Name.
+func (s *GetBoardResponse) SetName(val string) {
+	s.Name = val
+}
+
+// SetDescription sets the value of Description.
+func (s *GetBoardResponse) SetDescription(val string) {
+	s.Description = val
+}
+
+// SetOwnerID sets the value of OwnerID.
+func (s *GetBoardResponse) SetOwnerID(val int) {
+	s.OwnerID = val
+}
+
+// SetColumns sets the value of Columns.
+func (s *GetBoardResponse) SetColumns(val []GetBoardResponseColumnsItem) {
+	s.Columns = val
+}
+
+func (*GetBoardResponse) boardGetRes() {}
+
+// Колонка.
+type GetBoardResponseColumnsItem struct {
+	// ID колонки.
+	ID int `json:"id"`
+	// Название колонки.
+	Name string `json:"name"`
+	// Порядок колонки.
+	Position float64 `json:"position"`
+	// Список задач.
+	Tasks []GetBoardResponseColumnsItemTasksItem `json:"tasks"`
+}
+
+// GetID returns the value of ID.
+func (s *GetBoardResponseColumnsItem) GetID() int {
+	return s.ID
+}
+
+// GetName returns the value of Name.
+func (s *GetBoardResponseColumnsItem) GetName() string {
+	return s.Name
+}
+
+// GetPosition returns the value of Position.
+func (s *GetBoardResponseColumnsItem) GetPosition() float64 {
+	return s.Position
+}
+
+// GetTasks returns the value of Tasks.
+func (s *GetBoardResponseColumnsItem) GetTasks() []GetBoardResponseColumnsItemTasksItem {
+	return s.Tasks
+}
+
+// SetID sets the value of ID.
+func (s *GetBoardResponseColumnsItem) SetID(val int) {
+	s.ID = val
+}
+
+// SetName sets the value of Name.
+func (s *GetBoardResponseColumnsItem) SetName(val string) {
+	s.Name = val
+}
+
+// SetPosition sets the value of Position.
+func (s *GetBoardResponseColumnsItem) SetPosition(val float64) {
+	s.Position = val
+}
+
+// SetTasks sets the value of Tasks.
+func (s *GetBoardResponseColumnsItem) SetTasks(val []GetBoardResponseColumnsItemTasksItem) {
+	s.Tasks = val
+}
+
+type GetBoardResponseColumnsItemTasksItem struct {
+	// ID задачи.
+	ID int `json:"id"`
+	// Заголовок задачи.
+	Title string `json:"title"`
+	// Описание задачи.
+	Description string `json:"description"`
+	// Ответственный по задаче.
+	Assignee string `json:"assignee"`
+	// Порядок задача.
+	Position float64 `json:"position"`
+}
+
+// GetID returns the value of ID.
+func (s *GetBoardResponseColumnsItemTasksItem) GetID() int {
+	return s.ID
+}
+
+// GetTitle returns the value of Title.
+func (s *GetBoardResponseColumnsItemTasksItem) GetTitle() string {
+	return s.Title
+}
+
+// GetDescription returns the value of Description.
+func (s *GetBoardResponseColumnsItemTasksItem) GetDescription() string {
+	return s.Description
+}
+
+// GetAssignee returns the value of Assignee.
+func (s *GetBoardResponseColumnsItemTasksItem) GetAssignee() string {
+	return s.Assignee
+}
+
+// GetPosition returns the value of Position.
+func (s *GetBoardResponseColumnsItemTasksItem) GetPosition() float64 {
+	return s.Position
+}
+
+// SetID sets the value of ID.
+func (s *GetBoardResponseColumnsItemTasksItem) SetID(val int) {
+	s.ID = val
+}
+
+// SetTitle sets the value of Title.
+func (s *GetBoardResponseColumnsItemTasksItem) SetTitle(val string) {
+	s.Title = val
+}
+
+// SetDescription sets the value of Description.
+func (s *GetBoardResponseColumnsItemTasksItem) SetDescription(val string) {
+	s.Description = val
+}
+
+// SetAssignee sets the value of Assignee.
+func (s *GetBoardResponseColumnsItemTasksItem) SetAssignee(val string) {
+	s.Assignee = val
+}
+
+// SetPosition sets the value of Position.
+func (s *GetBoardResponseColumnsItemTasksItem) SetPosition(val float64) {
+	s.Position = val
+}
+
 // Ref: #/components/schemas/InternalServerError
 type InternalServerError struct {
 	// HTTP-код ошибки.
@@ -180,7 +484,14 @@ func (s *InternalServerError) SetMessage(val string) {
 	s.Message = val
 }
 
-func (*InternalServerError) boardCreateRes() {}
+func (*InternalServerError) boardCreateRes()          {}
+func (*InternalServerError) boardGetRes()             {}
+func (*InternalServerError) columnCreateRes()         {}
+func (*InternalServerError) columnDeleteRes()         {}
+func (*InternalServerError) columnUpdatePositionRes() {}
+func (*InternalServerError) taskCreateRes()           {}
+func (*InternalServerError) taskDeleteRes()           {}
+func (*InternalServerError) taskUpdatePositionRes()   {}
 
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {
@@ -272,4 +583,100 @@ func (o OptString) Or(d string) string {
 		return v
 	}
 	return d
+}
+
+// Ref: #/components/schemas/TaskCreateRequestBody
+type TaskCreateRequestBody struct {
+	// Название задачи.
+	Title string `json:"title"`
+	// Описание задачи.
+	Description string `json:"description"`
+	// Ответственный по задаче.
+	Assignee string `json:"assignee"`
+}
+
+// GetTitle returns the value of Title.
+func (s *TaskCreateRequestBody) GetTitle() string {
+	return s.Title
+}
+
+// GetDescription returns the value of Description.
+func (s *TaskCreateRequestBody) GetDescription() string {
+	return s.Description
+}
+
+// GetAssignee returns the value of Assignee.
+func (s *TaskCreateRequestBody) GetAssignee() string {
+	return s.Assignee
+}
+
+// SetTitle sets the value of Title.
+func (s *TaskCreateRequestBody) SetTitle(val string) {
+	s.Title = val
+}
+
+// SetDescription sets the value of Description.
+func (s *TaskCreateRequestBody) SetDescription(val string) {
+	s.Description = val
+}
+
+// SetAssignee sets the value of Assignee.
+func (s *TaskCreateRequestBody) SetAssignee(val string) {
+	s.Assignee = val
+}
+
+// Ref: #/components/schemas/TaskCreateResponse
+type TaskCreateResponse struct {
+	// ID созданной задачи.
+	TaskID int `json:"task_id"`
+}
+
+// GetTaskID returns the value of TaskID.
+func (s *TaskCreateResponse) GetTaskID() int {
+	return s.TaskID
+}
+
+// SetTaskID sets the value of TaskID.
+func (s *TaskCreateResponse) SetTaskID(val int) {
+	s.TaskID = val
+}
+
+func (*TaskCreateResponse) taskCreateRes() {}
+
+// TaskDeleteNoContent is response for TaskDelete operation.
+type TaskDeleteNoContent struct{}
+
+func (*TaskDeleteNoContent) taskDeleteRes() {}
+
+// TaskUpdatePositionNoContent is response for TaskUpdatePosition operation.
+type TaskUpdatePositionNoContent struct{}
+
+func (*TaskUpdatePositionNoContent) taskUpdatePositionRes() {}
+
+// Ref: #/components/schemas/TaskUpdatePositionRequestBody
+type TaskUpdatePositionRequestBody struct {
+	// Номер позиции слева.
+	LeftPosition float64 `json:"left_position"`
+	// Номер позиции справа.
+	RightPosition float64 `json:"right_position"`
+}
+
+// GetLeftPosition returns the value of LeftPosition.
+func (s *TaskUpdatePositionRequestBody) GetLeftPosition() float64 {
+	return s.LeftPosition
+}
+
+// GetRightPosition returns the value of RightPosition.
+func (s *TaskUpdatePositionRequestBody) GetRightPosition() float64 {
+	return s.RightPosition
+}
+
+// SetLeftPosition sets the value of LeftPosition.
+func (s *TaskUpdatePositionRequestBody) SetLeftPosition(val float64) {
+	s.LeftPosition = val
+}
+
+// SetRightPosition sets the value of RightPosition.
+func (s *TaskUpdatePositionRequestBody) SetRightPosition(val float64) {
+	s.RightPosition = val
 }

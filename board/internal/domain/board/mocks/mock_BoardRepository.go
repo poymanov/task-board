@@ -103,3 +103,260 @@ func (_c *BoardRepository_Create_Call) RunAndReturn(run func(ctx context.Context
 	_c.Call.Return(run)
 	return _c
 }
+
+// Delete provides a mock function for the type BoardRepository
+func (_mock *BoardRepository) Delete(ctx context.Context, id int) error {
+	ret := _mock.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Delete")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) error); ok {
+		r0 = returnFunc(ctx, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// BoardRepository_Delete_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Delete'
+type BoardRepository_Delete_Call struct {
+	*mock.Call
+}
+
+// Delete is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id int
+func (_e *BoardRepository_Expecter) Delete(ctx interface{}, id interface{}) *BoardRepository_Delete_Call {
+	return &BoardRepository_Delete_Call{Call: _e.mock.On("Delete", ctx, id)}
+}
+
+func (_c *BoardRepository_Delete_Call) Run(run func(ctx context.Context, id int)) *BoardRepository_Delete_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 int
+		if args[1] != nil {
+			arg1 = args[1].(int)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *BoardRepository_Delete_Call) Return(err error) *BoardRepository_Delete_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *BoardRepository_Delete_Call) RunAndReturn(run func(ctx context.Context, id int) error) *BoardRepository_Delete_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetAll provides a mock function for the type BoardRepository
+func (_mock *BoardRepository) GetAll(ctx context.Context, filter board.GetAllFilter) ([]board.Board, error) {
+	ret := _mock.Called(ctx, filter)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAll")
+	}
+
+	var r0 []board.Board
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, board.GetAllFilter) ([]board.Board, error)); ok {
+		return returnFunc(ctx, filter)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, board.GetAllFilter) []board.Board); ok {
+		r0 = returnFunc(ctx, filter)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]board.Board)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, board.GetAllFilter) error); ok {
+		r1 = returnFunc(ctx, filter)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// BoardRepository_GetAll_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAll'
+type BoardRepository_GetAll_Call struct {
+	*mock.Call
+}
+
+// GetAll is a helper method to define mock.On call
+//   - ctx context.Context
+//   - filter board.GetAllFilter
+func (_e *BoardRepository_Expecter) GetAll(ctx interface{}, filter interface{}) *BoardRepository_GetAll_Call {
+	return &BoardRepository_GetAll_Call{Call: _e.mock.On("GetAll", ctx, filter)}
+}
+
+func (_c *BoardRepository_GetAll_Call) Run(run func(ctx context.Context, filter board.GetAllFilter)) *BoardRepository_GetAll_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 board.GetAllFilter
+		if args[1] != nil {
+			arg1 = args[1].(board.GetAllFilter)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *BoardRepository_GetAll_Call) Return(boards []board.Board, err error) *BoardRepository_GetAll_Call {
+	_c.Call.Return(boards, err)
+	return _c
+}
+
+func (_c *BoardRepository_GetAll_Call) RunAndReturn(run func(ctx context.Context, filter board.GetAllFilter) ([]board.Board, error)) *BoardRepository_GetAll_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetById provides a mock function for the type BoardRepository
+func (_mock *BoardRepository) GetById(ctx context.Context, id int) (board.Board, error) {
+	ret := _mock.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetById")
+	}
+
+	var r0 board.Board
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) (board.Board, error)); ok {
+		return returnFunc(ctx, id)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) board.Board); ok {
+		r0 = returnFunc(ctx, id)
+	} else {
+		r0 = ret.Get(0).(board.Board)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = returnFunc(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// BoardRepository_GetById_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetById'
+type BoardRepository_GetById_Call struct {
+	*mock.Call
+}
+
+// GetById is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id int
+func (_e *BoardRepository_Expecter) GetById(ctx interface{}, id interface{}) *BoardRepository_GetById_Call {
+	return &BoardRepository_GetById_Call{Call: _e.mock.On("GetById", ctx, id)}
+}
+
+func (_c *BoardRepository_GetById_Call) Run(run func(ctx context.Context, id int)) *BoardRepository_GetById_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 int
+		if args[1] != nil {
+			arg1 = args[1].(int)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *BoardRepository_GetById_Call) Return(board1 board.Board, err error) *BoardRepository_GetById_Call {
+	_c.Call.Return(board1, err)
+	return _c
+}
+
+func (_c *BoardRepository_GetById_Call) RunAndReturn(run func(ctx context.Context, id int) (board.Board, error)) *BoardRepository_GetById_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// IsExistsById provides a mock function for the type BoardRepository
+func (_mock *BoardRepository) IsExistsById(ctx context.Context, ID int) (bool, error) {
+	ret := _mock.Called(ctx, ID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for IsExistsById")
+	}
+
+	var r0 bool
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) (bool, error)); ok {
+		return returnFunc(ctx, ID)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) bool); ok {
+		r0 = returnFunc(ctx, ID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = returnFunc(ctx, ID)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// BoardRepository_IsExistsById_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsExistsById'
+type BoardRepository_IsExistsById_Call struct {
+	*mock.Call
+}
+
+// IsExistsById is a helper method to define mock.On call
+//   - ctx context.Context
+//   - ID int
+func (_e *BoardRepository_Expecter) IsExistsById(ctx interface{}, ID interface{}) *BoardRepository_IsExistsById_Call {
+	return &BoardRepository_IsExistsById_Call{Call: _e.mock.On("IsExistsById", ctx, ID)}
+}
+
+func (_c *BoardRepository_IsExistsById_Call) Run(run func(ctx context.Context, ID int)) *BoardRepository_IsExistsById_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 int
+		if args[1] != nil {
+			arg1 = args[1].(int)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *BoardRepository_IsExistsById_Call) Return(b bool, err error) *BoardRepository_IsExistsById_Call {
+	_c.Call.Return(b, err)
+	return _c
+}
+
+func (_c *BoardRepository_IsExistsById_Call) RunAndReturn(run func(ctx context.Context, ID int) (bool, error)) *BoardRepository_IsExistsById_Call {
+	_c.Call.Return(run)
+	return _c
+}

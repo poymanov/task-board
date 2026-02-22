@@ -13,9 +13,19 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/adaptor"
 	loggerMiddleware "github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/poymanov/codemania-task-board/gateway/internal/config"
-	boardGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/board/v1"
+	boardGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/board/v1/board"
+	columnGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/board/v1/column"
+	taskGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/board/v1/task"
 	apiV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/http/gateway/v1"
-	createBoardUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/create"
+	boardCreateUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/create"
+	boardGetAllUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/get_all"
+	boardGetBoardUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/get_board"
+	columnCreateUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/column/create"
+	columnDeleteUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/column/delete"
+	columnUpdatePositionUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/column/update_position"
+	taskCreateUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/create"
+	taskDeleteUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/delete"
+	taskUpdatePositionUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/update_position"
 	"github.com/poymanov/codemania-task-board/platform/pkg/logger"
 	gatewayV1 "github.com/poymanov/codemania-task-board/shared/pkg/openapi/gateway/v1"
 	boardV1 "github.com/poymanov/codemania-task-board/shared/pkg/proto/board/v1"
@@ -27,9 +37,11 @@ import (
 const defaultInitializationTimeout = time.Second * 10
 
 type App struct {
-	closer      []func() error
-	config      *config.Config
-	boardClient *boardGrpcClientV1.BoardClient
+	closer       []func() error
+	config       *config.Config
+	boardClient  *boardGrpcClientV1.BoardClient
+	columnClient *columnGrpcClientV1.Client
+	taskClient   *taskGrpcClientV1.Client
 }
 
 func newApp(ctx context.Context) (*App, error) {
@@ -110,7 +122,7 @@ func (a *App) initConfig(ctx context.Context) error {
 	return nil
 }
 
-func (a *App) initBoardClient(ctx context.Context) error {
+func (a *App) initGrpcClients(ctx context.Context) error {
 	if _, ok := ctx.Deadline(); !ok {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, defaultInitializationTimeout)
@@ -127,12 +139,16 @@ func (a *App) initBoardClient(ctx context.Context) error {
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		)
 		if err != nil {
-			clientErr = fmt.Errorf("failed to connect board grpc: %w", err)
+			clientErr = fmt.Errorf("failed to connect grpc: %w", err)
 		}
 
 		boardServiceClient := boardV1.NewBoardServiceClient(conn)
+		columnServiceClient := boardV1.NewColumnServiceClient(conn)
+		taskServiceClient := boardV1.NewTaskServiceClient(conn)
 
 		a.boardClient = boardGrpcClientV1.NewClient(boardServiceClient)
+		a.columnClient = columnGrpcClientV1.NewClient(columnServiceClient)
+		a.taskClient = taskGrpcClientV1.NewClient(taskServiceClient)
 
 		a.closer = append(a.closer, func() error {
 			if cerr := conn.Close(); cerr != nil {
@@ -147,7 +163,7 @@ func (a *App) initBoardClient(ctx context.Context) error {
 
 	select {
 	case <-ctx.Done():
-		clientErr = fmt.Errorf("board gRPC client initialization timed out")
+		clientErr = fmt.Errorf("gRPC clients initialization timed out")
 	case <-chDone:
 	}
 
@@ -168,7 +184,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(ctx context.Context) error{
 		a.initConfig,
 		a.initLogger,
-		a.initBoardClient,
+		a.initGrpcClients,
 	}
 
 	for _, f := range inits {
@@ -188,8 +204,17 @@ func (a *App) initLogger(_ context.Context) error {
 }
 
 func (a *App) runHttpServer() error {
-	cbUseCase := createBoardUseCase.NewUseCase(a.boardClient)
-	api := apiV1.NewApi(cbUseCase)
+	bcuc := boardCreateUseCase.NewUseCase(a.boardClient)
+	bgauc := boardGetAllUseCase.NewUseCase(a.boardClient)
+	bgbuc := boardGetBoardUseCase.NewUseCase(a.boardClient)
+	ccuc := columnCreateUseCase.NewUseCase(a.columnClient)
+	cduc := columnDeleteUseCase.NewUseCase(a.columnClient)
+	cupuc := columnUpdatePositionUseCase.NewUseCase(a.columnClient)
+	tcuc := taskCreateUseCase.NewUseCase(a.taskClient)
+	tduc := taskDeleteUseCase.NewUseCase(a.taskClient)
+	tupuc := taskUpdatePositionUseCase.NewUseCase(a.taskClient)
+
+	api := apiV1.NewApi(bcuc, bgauc, ccuc, cduc, cupuc, tcuc, tduc, tupuc, bgbuc)
 
 	gatewayServer, err := gatewayV1.NewServer(api)
 	if err != nil {

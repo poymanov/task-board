@@ -8,21 +8,314 @@ option go_package = "github.com/poymanov/codemania-task-board/pkg/proto/board/v1
 
 service BoardService {
   rpc Create(BoardServiceCreateRequest) returns (BoardServiceCreateResponse);
+  rpc GetAll(BoardServiceGetAllRequest) returns (BoardServiceGetAllResponse);
+  rpc Delete(BoardServiceDeleteRequest) returns (BoardServiceDeleteResponse);
+  rpc GetBoard(BoardServiceGetBoardRequest) returns (BoardServiceGetBoardResponse);
+}
+
+service ColumnService {
+  rpc Create(ColumnServiceCreateRequest) returns (ColumnServiceCreateResponse);
+  rpc GetAll(ColumnServiceGetAllRequest) returns (ColumnServiceGetAllResponse);
+  rpc Delete(ColumnServiceDeleteRequest) returns (ColumnServiceDeleteResponse);
+  rpc UpdatePosition(ColumnServiceUpdatePositionRequest) returns (ColumnServiceUpdatePositionResponse);
+}
+
+service TaskService {
+  rpc Create(TaskServiceCreateRequest) returns (TaskServiceCreateResponse);
+  rpc GetAll(TaskServiceGetAllRequest) returns (TaskServiceGetAllResponse);
+  rpc Delete(TaskServiceDeleteRequest) returns (TaskServiceDeleteResponse);
+  rpc UpdatePosition(TaskServiceUpdatePositionRequest) returns (TaskServiceUpdatePositionResponse);
 }
 
 // Запрос на создание доски
 message BoardServiceCreateRequest {
   // Название доски
-  string name = 1  [(validate.rules).string = {min_len: 1}];
+  string name = 1 [(validate.rules).string = {min_len: 1}];
 
   // Описание доски
-  string description = 2  [(validate.rules).string = {min_len: 1}];
+  string description = 2 [(validate.rules).string = {min_len: 1}];
 
   // ID владельца доски
   int64 owner_id = 3 [(validate.rules).int64.gte = 1];
 }
 
+// Запрос на получение всех досок по ID владельца
+message BoardServiceGetAllRequest {
+  BoardGetAllFilter filter = 1;
+}
+
+// Запрос на удаление доски
+message BoardServiceDeleteRequest {
+  // ID доски
+  int64 id = 1  [(validate.rules).int64.gte = 1];
+}
+
+// Запрос на создание колонки
+message ColumnServiceCreateRequest {
+  // Название колонки
+  string name = 1 [(validate.rules).string = {min_len: 1}];
+
+  // ID доски
+  int64 board_id = 2 [(validate.rules).int64.gte = 1];
+}
+
+// Запрос на получение списка колонок
+message ColumnServiceGetAllRequest {
+  ColumnGetAllFilter filter = 1;
+
+  ColumnGetAllSort sort = 2;
+}
+
+// Запрос на удаление колонки
+message ColumnServiceDeleteRequest {
+  // ID доски
+  int64 id = 1  [(validate.rules).int64.gte = 1];
+}
+
+// Ответ со списком всех досок
+message BoardServiceGetAllResponse {
+  // Список досок
+  repeated Board boards = 1;
+}
+
 // Ответ на создание доски
 message BoardServiceCreateResponse {
   int64 board_id = 3;
+}
+
+// Ответ на удаление доски
+message BoardServiceDeleteResponse {
+
+}
+
+// Ответ на создание колонки
+message ColumnServiceCreateResponse {
+  int64 column_id = 1;
+}
+
+// Ответ на получение списка колонок
+message ColumnServiceGetAllResponse {
+  repeated Column columns = 1;
+}
+
+// Ответ на удаление колонки
+message ColumnServiceDeleteResponse {
+
+}
+
+// Запрос на изменение позиции колонки
+message ColumnServiceUpdatePositionRequest {
+  // ID колонки
+  int64 id = 1  [(validate.rules).int64.gte = 1];
+
+  float left_position = 2  [(validate.rules).float.gte = 1];
+
+  float right_position = 3  [(validate.rules).float.gte = 1];
+}
+
+// Ответ на изменение позиции колонки
+message ColumnServiceUpdatePositionResponse {
+
+}
+
+// Запрос на создание задачи
+message TaskServiceCreateRequest {
+  // Название задачи
+  string title = 1 [(validate.rules).string = {min_len: 1}];
+
+  // Описание задачи
+  string description = 2 [(validate.rules).string = {min_len: 1}];
+
+  // Исполнитель задачи
+  string assignee = 3 [(validate.rules).string = {min_len: 1}];
+
+  // Колонка, к которой относится задача
+  int64 column_id = 4 [(validate.rules).int64.gte = 1];
+}
+
+// Ответ на создание задачи
+message TaskServiceCreateResponse {
+  int64 task_id = 1;
+}
+
+// Запрос на получение списка задач
+message TaskServiceGetAllRequest {
+  TaskGetAllFilter filter = 1;
+
+  TaskGetAllSort sort = 2;
+}
+
+// Ответ на получение списка задач
+message TaskServiceGetAllResponse {
+  repeated Task tasks = 1;
+}
+
+// Запрос на удаление колонки
+message TaskServiceDeleteRequest {
+  // ID доски
+  int64 id = 1  [(validate.rules).int64.gte = 1];
+}
+
+// Ответ на удаление колонки
+message TaskServiceDeleteResponse {
+
+}
+
+// Запрос на изменение позиции задачи
+message TaskServiceUpdatePositionRequest {
+  // ID колонки
+  int64 id = 1  [(validate.rules).int64.gte = 1];
+
+  float left_position = 2  [(validate.rules).float.gte = 1];
+
+  float right_position = 3  [(validate.rules).float.gte = 1];
+}
+
+// Ответ на изменение позиции задачи
+message TaskServiceUpdatePositionResponse {
+
+}
+
+// Запрос на получение доски
+message BoardServiceGetBoardRequest {
+  // ID доски
+  int64 id = 1  [(validate.rules).int64.gte = 1];
+}
+
+// Ответ на получение доски
+message BoardServiceGetBoardResponse {
+  BoardGetBoard board = 1;
+}
+
+// Доска со списком связанных колонок
+message BoardGetBoard {
+  // ID доски
+  int64 id = 1;
+
+  // Название доски
+  string name = 2;
+
+  // Описание доски
+  string description = 3;
+
+  // ID владельца доски
+  int64 owner_id = 4;
+
+  repeated ColumnGetBoard columns = 5;
+}
+
+// Колонки со списком связанных задач
+message ColumnGetBoard {
+  // ID колонки
+  int64 id = 1;
+
+  // Название колонки
+  string name = 2;
+
+  // Порядок расположения доски
+  float position = 3;
+
+  repeated TaskGetBoard tasks = 4;
+}
+
+// Задача
+message TaskGetBoard {
+  // ID
+  int64 id = 1;
+
+  // Название
+  string title = 2;
+
+  // Описание
+  string description = 3;
+
+  // Ответственный
+  string assignee = 4;
+
+  // Порядок расположения
+  float position = 5;
+}
+
+// Доска
+message Board {
+  // ID доски
+  int64 id = 1;
+
+  // Название доски
+  string name = 2;
+
+  // Описание доски
+  string description = 3;
+
+  // ID владельца доски
+  int64 owner_id = 4;
+}
+
+// Колонка
+message Column {
+  // ID колонки
+  int64 id = 1;
+
+  // Название колонки
+  string name = 2;
+
+  // Порядок расположения доски
+  float position = 3;
+
+  // ID доски, к которой принадлежит колонка
+  int64 board_id = 4;
+}
+
+// Задача
+message Task {
+  // ID
+  int64 id = 1;
+
+  // Название
+  string title = 2;
+
+  // Описание
+  string description = 3;
+
+  // Ответственный
+  string assignee = 4;
+
+  // Порядок расположения
+  float position = 5;
+
+  // ID колонки, к которой принадлежит задача
+  int64 column_id = 6;
+}
+
+// Фильтр для запроса по всем доскам
+message BoardGetAllFilter {
+  // ID владельца доски
+  optional int64 owner_id = 1 [(validate.rules).int64.gte = 1];
+}
+
+// Фильтр для запроса по всем колонкам
+message ColumnGetAllFilter {
+  // ID доски
+  optional int64 board_id = 1 [(validate.rules).int64.gte = 1];
+}
+
+// Опции сортировки для запроса по всем колонкам
+message ColumnGetAllSort {
+  // Порядок сортировки по позиции
+  optional string position = 1 [(validate.rules).string = {min_len: 1}];
+}
+
+// Фильтр для запроса по всем задачам
+message TaskGetAllFilter {
+  // ID колонки
+  repeated int64 column_ids = 1 [(validate.rules).repeated = {items: {
+    int64: {gte: 1}
+  }}];
+}
+
+// Опции сортировки для запроса по всем задачам
+message TaskGetAllSort {
+  optional string column_id = 1 [(validate.rules).string = {min_len: 1}];
+
+  optional string position = 2 [(validate.rules).string = {min_len: 1}];
 }

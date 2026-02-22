@@ -1,6 +1,8 @@
-package v1
+package board
 
-type CreateBoardRequest struct {
+type Board struct {
+	Id int
+
 	Name string
 
 	Description string

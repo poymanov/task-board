@@ -6,5 +6,13 @@ package gateway_v1
 type OperationName = string
 
 const (
-	BoardCreateOperation OperationName = "BoardCreate"
+	BoardCreateOperation          OperationName = "BoardCreate"
+	BoardGetOperation             OperationName = "BoardGet"
+	BoardGetAllOperation          OperationName = "BoardGetAll"
+	ColumnCreateOperation         OperationName = "ColumnCreate"
+	ColumnDeleteOperation         OperationName = "ColumnDelete"
+	ColumnUpdatePositionOperation OperationName = "ColumnUpdatePosition"
+	TaskCreateOperation           OperationName = "TaskCreate"
+	TaskDeleteOperation           OperationName = "TaskDelete"
+	TaskUpdatePositionOperation   OperationName = "TaskUpdatePosition"
 )

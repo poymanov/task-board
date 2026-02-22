@@ -4,3 +4,35 @@ package gateway_v1
 type BoardCreateRes interface {
 	boardCreateRes()
 }
+
+type BoardGetAllRes interface {
+	boardGetAllRes()
+}
+
+type BoardGetRes interface {
+	boardGetRes()
+}
+
+type ColumnCreateRes interface {
+	columnCreateRes()
+}
+
+type ColumnDeleteRes interface {
+	columnDeleteRes()
+}
+
+type ColumnUpdatePositionRes interface {
+	columnUpdatePositionRes()
+}
+
+type TaskCreateRes interface {
+	taskCreateRes()
+}
+
+type TaskDeleteRes interface {
+	taskDeleteRes()
+}
+
+type TaskUpdatePositionRes interface {
+	taskUpdatePositionRes()
+}

@@ -16,16 +16,48 @@ func (a *Api) BoardCreate(ctx context.Context, req *gatewayV1.CreateBoardRequest
 		OwnerId:     req.GetOwnerID(),
 	}
 
-	boardId, err := a.createBoardUseCase.Create(ctx, createBoardDTO)
+	boardId, err := a.boardCreateUseCase.Create(ctx, createBoardDTO)
 	if err != nil {
-		log.Warn().Err(err).Msg("create board failed")
+		log.Error().Err(err).Msg("create board failed")
 		return &gatewayV1.BadRequestError{
 			Code:    http.StatusBadRequest,
-			Message: err.Error(),
+			Message: "Create board failed",
 		}, nil
 	}
 
 	return &gatewayV1.CreateBoardResponse{
 		BoardID: boardId,
 	}, nil
+}
+
+func (a *Api) BoardGetAll(ctx context.Context) (gatewayV1.BoardGetAllRes, error) {
+	boards, err := a.boardGetAllUseCase.GetAll(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("get all board failed")
+		return &gatewayV1.BadRequestError{
+			Code:    http.StatusBadRequest,
+			Message: "Get all boards failed",
+		}, nil
+	}
+
+	apiBoards := make(gatewayV1.GetAllBoardResponse, 0, len(boards))
+
+	for _, board := range boards {
+		apiBoards = append(apiBoards, GetAllBoardDTOToTransport(board))
+	}
+
+	return &apiBoards, nil
+}
+
+func (a *Api) BoardGet(ctx context.Context, params gatewayV1.BoardGetParams) (gatewayV1.BoardGetRes, error) {
+	board, err := a.boardGetBoardUseCase.Get(ctx, params.ID)
+	if err != nil {
+		log.Error().Err(err).Msg("get board failed")
+		return &gatewayV1.BadRequestError{
+			Code:    http.StatusBadRequest,
+			Message: "Get board failed",
+		}, nil
+	}
+
+	return GetBoardDTOToTransport(board), nil
 }

@@ -20,7 +20,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BoardService_Create_FullMethodName = "/board.v1.BoardService/Create"
+	BoardService_Create_FullMethodName   = "/board.v1.BoardService/Create"
+	BoardService_GetAll_FullMethodName   = "/board.v1.BoardService/GetAll"
+	BoardService_Delete_FullMethodName   = "/board.v1.BoardService/Delete"
+	BoardService_GetBoard_FullMethodName = "/board.v1.BoardService/GetBoard"
 )
 
 // BoardServiceClient is the client API for BoardService service.
@@ -28,6 +31,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BoardServiceClient interface {
 	Create(ctx context.Context, in *BoardServiceCreateRequest, opts ...grpc.CallOption) (*BoardServiceCreateResponse, error)
+	GetAll(ctx context.Context, in *BoardServiceGetAllRequest, opts ...grpc.CallOption) (*BoardServiceGetAllResponse, error)
+	Delete(ctx context.Context, in *BoardServiceDeleteRequest, opts ...grpc.CallOption) (*BoardServiceDeleteResponse, error)
+	GetBoard(ctx context.Context, in *BoardServiceGetBoardRequest, opts ...grpc.CallOption) (*BoardServiceGetBoardResponse, error)
 }
 
 type boardServiceClient struct {
@@ -48,11 +54,44 @@ func (c *boardServiceClient) Create(ctx context.Context, in *BoardServiceCreateR
 	return out, nil
 }
 
+func (c *boardServiceClient) GetAll(ctx context.Context, in *BoardServiceGetAllRequest, opts ...grpc.CallOption) (*BoardServiceGetAllResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BoardServiceGetAllResponse)
+	err := c.cc.Invoke(ctx, BoardService_GetAll_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *boardServiceClient) Delete(ctx context.Context, in *BoardServiceDeleteRequest, opts ...grpc.CallOption) (*BoardServiceDeleteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BoardServiceDeleteResponse)
+	err := c.cc.Invoke(ctx, BoardService_Delete_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *boardServiceClient) GetBoard(ctx context.Context, in *BoardServiceGetBoardRequest, opts ...grpc.CallOption) (*BoardServiceGetBoardResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BoardServiceGetBoardResponse)
+	err := c.cc.Invoke(ctx, BoardService_GetBoard_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BoardServiceServer is the server API for BoardService service.
 // All implementations must embed UnimplementedBoardServiceServer
 // for forward compatibility.
 type BoardServiceServer interface {
 	Create(context.Context, *BoardServiceCreateRequest) (*BoardServiceCreateResponse, error)
+	GetAll(context.Context, *BoardServiceGetAllRequest) (*BoardServiceGetAllResponse, error)
+	Delete(context.Context, *BoardServiceDeleteRequest) (*BoardServiceDeleteResponse, error)
+	GetBoard(context.Context, *BoardServiceGetBoardRequest) (*BoardServiceGetBoardResponse, error)
 	mustEmbedUnimplementedBoardServiceServer()
 }
 
@@ -65,6 +104,18 @@ type UnimplementedBoardServiceServer struct{}
 
 func (UnimplementedBoardServiceServer) Create(context.Context, *BoardServiceCreateRequest) (*BoardServiceCreateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
+}
+
+func (UnimplementedBoardServiceServer) GetAll(context.Context, *BoardServiceGetAllRequest) (*BoardServiceGetAllResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAll not implemented")
+}
+
+func (UnimplementedBoardServiceServer) Delete(context.Context, *BoardServiceDeleteRequest) (*BoardServiceDeleteResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Delete not implemented")
+}
+
+func (UnimplementedBoardServiceServer) GetBoard(context.Context, *BoardServiceGetBoardRequest) (*BoardServiceGetBoardResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetBoard not implemented")
 }
 func (UnimplementedBoardServiceServer) mustEmbedUnimplementedBoardServiceServer() {}
 func (UnimplementedBoardServiceServer) testEmbeddedByValue()                      {}
@@ -105,6 +156,60 @@ func _BoardService_Create_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BoardService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BoardServiceGetAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BoardServiceServer).GetAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BoardService_GetAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BoardServiceServer).GetAll(ctx, req.(*BoardServiceGetAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BoardService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BoardServiceDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BoardServiceServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BoardService_Delete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BoardServiceServer).Delete(ctx, req.(*BoardServiceDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BoardService_GetBoard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BoardServiceGetBoardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BoardServiceServer).GetBoard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BoardService_GetBoard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BoardServiceServer).GetBoard(ctx, req.(*BoardServiceGetBoardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BoardService_ServiceDesc is the grpc.ServiceDesc for BoardService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -115,6 +220,456 @@ var BoardService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Create",
 			Handler:    _BoardService_Create_Handler,
+		},
+		{
+			MethodName: "GetAll",
+			Handler:    _BoardService_GetAll_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _BoardService_Delete_Handler,
+		},
+		{
+			MethodName: "GetBoard",
+			Handler:    _BoardService_GetBoard_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "board/v1/board.proto",
+}
+
+const (
+	ColumnService_Create_FullMethodName         = "/board.v1.ColumnService/Create"
+	ColumnService_GetAll_FullMethodName         = "/board.v1.ColumnService/GetAll"
+	ColumnService_Delete_FullMethodName         = "/board.v1.ColumnService/Delete"
+	ColumnService_UpdatePosition_FullMethodName = "/board.v1.ColumnService/UpdatePosition"
+)
+
+// ColumnServiceClient is the client API for ColumnService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ColumnServiceClient interface {
+	Create(ctx context.Context, in *ColumnServiceCreateRequest, opts ...grpc.CallOption) (*ColumnServiceCreateResponse, error)
+	GetAll(ctx context.Context, in *ColumnServiceGetAllRequest, opts ...grpc.CallOption) (*ColumnServiceGetAllResponse, error)
+	Delete(ctx context.Context, in *ColumnServiceDeleteRequest, opts ...grpc.CallOption) (*ColumnServiceDeleteResponse, error)
+	UpdatePosition(ctx context.Context, in *ColumnServiceUpdatePositionRequest, opts ...grpc.CallOption) (*ColumnServiceUpdatePositionResponse, error)
+}
+
+type columnServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewColumnServiceClient(cc grpc.ClientConnInterface) ColumnServiceClient {
+	return &columnServiceClient{cc}
+}
+
+func (c *columnServiceClient) Create(ctx context.Context, in *ColumnServiceCreateRequest, opts ...grpc.CallOption) (*ColumnServiceCreateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ColumnServiceCreateResponse)
+	err := c.cc.Invoke(ctx, ColumnService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *columnServiceClient) GetAll(ctx context.Context, in *ColumnServiceGetAllRequest, opts ...grpc.CallOption) (*ColumnServiceGetAllResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ColumnServiceGetAllResponse)
+	err := c.cc.Invoke(ctx, ColumnService_GetAll_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *columnServiceClient) Delete(ctx context.Context, in *ColumnServiceDeleteRequest, opts ...grpc.CallOption) (*ColumnServiceDeleteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ColumnServiceDeleteResponse)
+	err := c.cc.Invoke(ctx, ColumnService_Delete_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *columnServiceClient) UpdatePosition(ctx context.Context, in *ColumnServiceUpdatePositionRequest, opts ...grpc.CallOption) (*ColumnServiceUpdatePositionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ColumnServiceUpdatePositionResponse)
+	err := c.cc.Invoke(ctx, ColumnService_UpdatePosition_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ColumnServiceServer is the server API for ColumnService service.
+// All implementations must embed UnimplementedColumnServiceServer
+// for forward compatibility.
+type ColumnServiceServer interface {
+	Create(context.Context, *ColumnServiceCreateRequest) (*ColumnServiceCreateResponse, error)
+	GetAll(context.Context, *ColumnServiceGetAllRequest) (*ColumnServiceGetAllResponse, error)
+	Delete(context.Context, *ColumnServiceDeleteRequest) (*ColumnServiceDeleteResponse, error)
+	UpdatePosition(context.Context, *ColumnServiceUpdatePositionRequest) (*ColumnServiceUpdatePositionResponse, error)
+	mustEmbedUnimplementedColumnServiceServer()
+}
+
+// UnimplementedColumnServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedColumnServiceServer struct{}
+
+func (UnimplementedColumnServiceServer) Create(context.Context, *ColumnServiceCreateRequest) (*ColumnServiceCreateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
+}
+
+func (UnimplementedColumnServiceServer) GetAll(context.Context, *ColumnServiceGetAllRequest) (*ColumnServiceGetAllResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAll not implemented")
+}
+
+func (UnimplementedColumnServiceServer) Delete(context.Context, *ColumnServiceDeleteRequest) (*ColumnServiceDeleteResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Delete not implemented")
+}
+
+func (UnimplementedColumnServiceServer) UpdatePosition(context.Context, *ColumnServiceUpdatePositionRequest) (*ColumnServiceUpdatePositionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdatePosition not implemented")
+}
+func (UnimplementedColumnServiceServer) mustEmbedUnimplementedColumnServiceServer() {}
+func (UnimplementedColumnServiceServer) testEmbeddedByValue()                       {}
+
+// UnsafeColumnServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ColumnServiceServer will
+// result in compilation errors.
+type UnsafeColumnServiceServer interface {
+	mustEmbedUnimplementedColumnServiceServer()
+}
+
+func RegisterColumnServiceServer(s grpc.ServiceRegistrar, srv ColumnServiceServer) {
+	// If the following call panics, it indicates UnimplementedColumnServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&ColumnService_ServiceDesc, srv)
+}
+
+func _ColumnService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ColumnServiceCreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ColumnServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ColumnService_Create_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ColumnServiceServer).Create(ctx, req.(*ColumnServiceCreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ColumnService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ColumnServiceGetAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ColumnServiceServer).GetAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ColumnService_GetAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ColumnServiceServer).GetAll(ctx, req.(*ColumnServiceGetAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ColumnService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ColumnServiceDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ColumnServiceServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ColumnService_Delete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ColumnServiceServer).Delete(ctx, req.(*ColumnServiceDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ColumnService_UpdatePosition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ColumnServiceUpdatePositionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ColumnServiceServer).UpdatePosition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ColumnService_UpdatePosition_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ColumnServiceServer).UpdatePosition(ctx, req.(*ColumnServiceUpdatePositionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ColumnService_ServiceDesc is the grpc.ServiceDesc for ColumnService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ColumnService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "board.v1.ColumnService",
+	HandlerType: (*ColumnServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Create",
+			Handler:    _ColumnService_Create_Handler,
+		},
+		{
+			MethodName: "GetAll",
+			Handler:    _ColumnService_GetAll_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _ColumnService_Delete_Handler,
+		},
+		{
+			MethodName: "UpdatePosition",
+			Handler:    _ColumnService_UpdatePosition_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "board/v1/board.proto",
+}
+
+const (
+	TaskService_Create_FullMethodName         = "/board.v1.TaskService/Create"
+	TaskService_GetAll_FullMethodName         = "/board.v1.TaskService/GetAll"
+	TaskService_Delete_FullMethodName         = "/board.v1.TaskService/Delete"
+	TaskService_UpdatePosition_FullMethodName = "/board.v1.TaskService/UpdatePosition"
+)
+
+// TaskServiceClient is the client API for TaskService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type TaskServiceClient interface {
+	Create(ctx context.Context, in *TaskServiceCreateRequest, opts ...grpc.CallOption) (*TaskServiceCreateResponse, error)
+	GetAll(ctx context.Context, in *TaskServiceGetAllRequest, opts ...grpc.CallOption) (*TaskServiceGetAllResponse, error)
+	Delete(ctx context.Context, in *TaskServiceDeleteRequest, opts ...grpc.CallOption) (*TaskServiceDeleteResponse, error)
+	UpdatePosition(ctx context.Context, in *TaskServiceUpdatePositionRequest, opts ...grpc.CallOption) (*TaskServiceUpdatePositionResponse, error)
+}
+
+type taskServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewTaskServiceClient(cc grpc.ClientConnInterface) TaskServiceClient {
+	return &taskServiceClient{cc}
+}
+
+func (c *taskServiceClient) Create(ctx context.Context, in *TaskServiceCreateRequest, opts ...grpc.CallOption) (*TaskServiceCreateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TaskServiceCreateResponse)
+	err := c.cc.Invoke(ctx, TaskService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) GetAll(ctx context.Context, in *TaskServiceGetAllRequest, opts ...grpc.CallOption) (*TaskServiceGetAllResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TaskServiceGetAllResponse)
+	err := c.cc.Invoke(ctx, TaskService_GetAll_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) Delete(ctx context.Context, in *TaskServiceDeleteRequest, opts ...grpc.CallOption) (*TaskServiceDeleteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TaskServiceDeleteResponse)
+	err := c.cc.Invoke(ctx, TaskService_Delete_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) UpdatePosition(ctx context.Context, in *TaskServiceUpdatePositionRequest, opts ...grpc.CallOption) (*TaskServiceUpdatePositionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TaskServiceUpdatePositionResponse)
+	err := c.cc.Invoke(ctx, TaskService_UpdatePosition_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TaskServiceServer is the server API for TaskService service.
+// All implementations must embed UnimplementedTaskServiceServer
+// for forward compatibility.
+type TaskServiceServer interface {
+	Create(context.Context, *TaskServiceCreateRequest) (*TaskServiceCreateResponse, error)
+	GetAll(context.Context, *TaskServiceGetAllRequest) (*TaskServiceGetAllResponse, error)
+	Delete(context.Context, *TaskServiceDeleteRequest) (*TaskServiceDeleteResponse, error)
+	UpdatePosition(context.Context, *TaskServiceUpdatePositionRequest) (*TaskServiceUpdatePositionResponse, error)
+	mustEmbedUnimplementedTaskServiceServer()
+}
+
+// UnimplementedTaskServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedTaskServiceServer struct{}
+
+func (UnimplementedTaskServiceServer) Create(context.Context, *TaskServiceCreateRequest) (*TaskServiceCreateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
+}
+
+func (UnimplementedTaskServiceServer) GetAll(context.Context, *TaskServiceGetAllRequest) (*TaskServiceGetAllResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAll not implemented")
+}
+
+func (UnimplementedTaskServiceServer) Delete(context.Context, *TaskServiceDeleteRequest) (*TaskServiceDeleteResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Delete not implemented")
+}
+
+func (UnimplementedTaskServiceServer) UpdatePosition(context.Context, *TaskServiceUpdatePositionRequest) (*TaskServiceUpdatePositionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdatePosition not implemented")
+}
+func (UnimplementedTaskServiceServer) mustEmbedUnimplementedTaskServiceServer() {}
+func (UnimplementedTaskServiceServer) testEmbeddedByValue()                     {}
+
+// UnsafeTaskServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TaskServiceServer will
+// result in compilation errors.
+type UnsafeTaskServiceServer interface {
+	mustEmbedUnimplementedTaskServiceServer()
+}
+
+func RegisterTaskServiceServer(s grpc.ServiceRegistrar, srv TaskServiceServer) {
+	// If the following call panics, it indicates UnimplementedTaskServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&TaskService_ServiceDesc, srv)
+}
+
+func _TaskService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskServiceCreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TaskService_Create_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).Create(ctx, req.(*TaskServiceCreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskServiceGetAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GetAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TaskService_GetAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GetAll(ctx, req.(*TaskServiceGetAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskServiceDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TaskService_Delete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).Delete(ctx, req.(*TaskServiceDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_UpdatePosition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskServiceUpdatePositionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).UpdatePosition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TaskService_UpdatePosition_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).UpdatePosition(ctx, req.(*TaskServiceUpdatePositionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// TaskService_ServiceDesc is the grpc.ServiceDesc for TaskService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var TaskService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "board.v1.TaskService",
+	HandlerType: (*TaskServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Create",
+			Handler:    _TaskService_Create_Handler,
+		},
+		{
+			MethodName: "GetAll",
+			Handler:    _TaskService_GetAll_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _TaskService_Delete_Handler,
+		},
+		{
+			MethodName: "UpdatePosition",
+			Handler:    _TaskService_UpdatePosition_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

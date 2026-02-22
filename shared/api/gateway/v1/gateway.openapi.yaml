@@ -11,6 +11,10 @@ x-ogen:
 tags:
   - name: Board
     description: "Операции с досками"
+  - name: Column
+    description: "Операции с колонками"
+  - name: Task
+    description: "Операции с задачами"
 
 paths:
   /api/v1/boards:
@@ -50,6 +54,346 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
+    get:
+      summary: "Получение досок"
+      operationId: BoardGetAll
+      tags:
+        - Board
+      responses:
+        '200':
+          description: "Успешное получение досок"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAllBoardResponse"
+        '400':
+          description: "Ошибка запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        default:
+          description: "Прочие ошибки"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+  /api/v1/boards/{id}:
+    get:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID доски
+      summary: "Получение доски"
+      operationId: BoardGet
+      tags:
+        - Board
+      responses:
+        '200':
+          description: "Успешное получение доски"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBoardResponse"
+        '400':
+          description: "Ошибка запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        '500':
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+        default:
+          description: "Прочие ошибки"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+  /api/v1/boards/{id}/columns:
+    post:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID доски
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateColumnRequestBody"
+      summary: "Создание колонки"
+      operationId: ColumnCreate
+      tags:
+        - Column
+      responses:
+        '200':
+          description: "Колонка успешно создана"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateColumnResponse"
+        '400':
+          description: "Ошибка запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        '500':
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+        default:
+          description: "Прочие ошибки"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+  /api/v1/boards/{boardId}/columns/{columnId}:
+    delete:
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: integer
+          description: ID доски
+        - in: path
+          name: columnId
+          required: true
+          schema:
+            type: integer
+          description: ID колонки
+      summary: "Удаление колонки"
+      operationId: ColumnDelete
+      tags:
+        - Column
+      responses:
+        '204':
+          description: "Колонка успешно удалена"
+        '400':
+          description: "Ошибка запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        '500':
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+        default:
+          description: "Прочие ошибки"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+  /api/v1/boards/{boardId}/columns/{columnId}/update-position:
+    patch:
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: integer
+          description: ID доски
+        - in: path
+          name: columnId
+          required: true
+          schema:
+            type: integer
+          description: ID колонки
+      summary: "Изменение позиции колонки"
+      operationId: ColumnUpdatePosition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ColumnUpdatePositionRequestBody"
+      tags:
+        - Column
+      responses:
+        '204':
+          description: "Позиция колонки успешно изменена"
+        '400':
+          description: "Ошибка запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        '500':
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+        default:
+          description: "Прочие ошибки"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+  /api/v1/boards/{boardId}/columns/{columnId}/tasks:
+    post:
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: integer
+          description: ID доски
+        - in: path
+          name: columnId
+          required: true
+          schema:
+            type: integer
+          description: ID колонки
+      summary: "Создание задачи"
+      operationId: TaskCreate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskCreateRequestBody"
+      tags:
+        - Task
+      responses:
+        '200':
+          description: "Задача успешно создана"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskCreateResponse"
+        '400':
+          description: "Ошибка запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        '500':
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+        default:
+          description: "Прочие ошибки"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+  /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}:
+    post:
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: integer
+          description: ID доски
+        - in: path
+          name: columnId
+          required: true
+          schema:
+            type: integer
+          description: ID колонки
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: integer
+          description: ID задачи
+      summary: "Удаление задачи"
+      operationId: TaskDelete
+      tags:
+        - Task
+      responses:
+        '204':
+          description: "Задача успешно удалена"
+        '400':
+          description: "Ошибка запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        '500':
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+        default:
+          description: "Прочие ошибки"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+  /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}/update-position:
+    patch:
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: integer
+          description: ID доски
+        - in: path
+          name: columnId
+          required: true
+          schema:
+            type: integer
+          description: ID колонки
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: integer
+          description: ID задачи
+      summary: "Изменение позиции задачи"
+      operationId: TaskUpdatePosition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdatePositionRequestBody"
+      tags:
+        - Task
+      responses:
+        '204':
+          description: "Позиция задачи успешно изменена"
+        '400':
+          description: "Ошибка запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        '500':
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+        default:
+          description: "Прочие ошибки"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
 components:
   schemas:
     CreateBoardRequestBody:
@@ -62,7 +406,7 @@ components:
         name:
           type: string
           description: "Название доски"
-          example: "TODO"
+          example: "Project"
         description:
           type: string
           description: "Описание доски"
@@ -71,6 +415,62 @@ components:
           type: integer
           description: "ID автора доски"
           example: 1
+    CreateColumnRequestBody:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: "Название колонки"
+          example: "TODO"
+    ColumnUpdatePositionRequestBody:
+      type: object
+      required:
+        - left_position
+        - right_position
+      properties:
+        left_position:
+          type: number
+          description: "Номер позиции слева"
+          example: 2000
+        right_position:
+          type: number
+          description: "Номер позиции справа"
+          example: 3000
+    TaskUpdatePositionRequestBody:
+      type: object
+      required:
+        - left_position
+        - right_position
+      properties:
+        left_position:
+          type: number
+          description: "Номер позиции слева"
+          example: 2000
+        right_position:
+          type: number
+          description: "Номер позиции справа"
+          example: 3000
+    TaskCreateRequestBody:
+      type: object
+      required:
+        - title
+        - description
+        - assignee
+      properties:
+        title:
+          type: string
+          description: "Название задачи"
+          example: "Task"
+        description:
+          type: string
+          description: "Описание задачи"
+          example: "Description"
+        assignee:
+          type: string
+          description: "Ответственный по задаче"
+          example: "Assignee"
     CreateBoardResponse:
       type: object
       required:
@@ -80,6 +480,126 @@ components:
           type: integer
           description: "ID созданной доски"
           example: 1
+    GetBoardResponse:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - owner_id
+        - columns
+      properties:
+        id:
+          type: integer
+          description: "ID доски"
+          example: 1
+        name:
+          type: string
+          description: "Название доски"
+          example: "Board name"
+        description:
+          type: string
+          description: "Описание доски"
+          example: "Board description"
+        owner_id:
+          type: integer
+          description: "Владелец доски"
+          example: 1
+        columns:
+          type: array
+          description: "Список колонок"
+          items:
+            type: object
+            required:
+              - id
+              - name
+              - position
+              - tasks
+            description: "Колонка"
+            properties:
+              id:
+                type: integer
+                description: "ID колонки"
+                example: 1
+              name:
+                type: string
+                description: "Название колонки"
+                example: "Column"
+              position:
+                type: number
+                description: "Порядок колонки"
+                example: 1000
+              tasks:
+                type: array
+                description: "Список задач"
+                items:
+                  type: object
+                  required:
+                    - id
+                    - title
+                    - description
+                    - assignee
+                    - position
+                  properties:
+                    id:
+                      type: integer
+                      description: "ID задачи"
+                      example: 1
+                    title:
+                      type: string
+                      description: "Заголовок задачи"
+                      example: "Task"
+                    description:
+                      type: string
+                      description: "Описание задачи"
+                      example: "Task description"
+                    assignee:
+                      type: string
+                      description: "Ответственный по задаче"
+                      example: "Task assignee"
+                    position:
+                      type: number
+                      description: "Порядок задача"
+                      example: 1000
+    CreateColumnResponse:
+      type: object
+      required:
+        - column_id
+      properties:
+        column_id:
+          type: integer
+          description: "ID созданной колонки"
+          example: 1
+    TaskCreateResponse:
+      type: object
+      required:
+        - task_id
+      properties:
+        task_id:
+          type: integer
+          description: "ID созданной задачи"
+          example: 1
+    GetAllBoardResponse:
+      type: array
+      items:
+        type: object
+        required:
+          - id
+          - name
+          - description
+        properties:
+          id:
+            type: integer
+            description: "ID доски"
+            example: 1
+          name:
+            type: string
+            description: "Название доски"
+            example: "Test name"
+          description:
+            type: string
+            description: "Описание доски"
+            example: "Test description"
     BadRequestError:
       type: object
       required:

@@ -1,4 +1,4 @@
-package v1
+package board
 
 import boardV1 "github.com/poymanov/codemania-task-board/shared/pkg/proto/board/v1"
 

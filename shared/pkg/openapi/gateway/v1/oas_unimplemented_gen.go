@@ -22,6 +22,78 @@ func (UnimplementedHandler) BoardCreate(ctx context.Context, req *CreateBoardReq
 	return r, ht.ErrNotImplemented
 }
 
+// BoardGet implements BoardGet operation.
+//
+// Получение доски.
+//
+// GET /api/v1/boards/{id}
+func (UnimplementedHandler) BoardGet(ctx context.Context, params BoardGetParams) (r BoardGetRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// BoardGetAll implements BoardGetAll operation.
+//
+// Получение досок.
+//
+// GET /api/v1/boards
+func (UnimplementedHandler) BoardGetAll(ctx context.Context) (r BoardGetAllRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ColumnCreate implements ColumnCreate operation.
+//
+// Создание колонки.
+//
+// POST /api/v1/boards/{id}/columns
+func (UnimplementedHandler) ColumnCreate(ctx context.Context, req *CreateColumnRequestBody, params ColumnCreateParams) (r ColumnCreateRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ColumnDelete implements ColumnDelete operation.
+//
+// Удаление колонки.
+//
+// DELETE /api/v1/boards/{boardId}/columns/{columnId}
+func (UnimplementedHandler) ColumnDelete(ctx context.Context, params ColumnDeleteParams) (r ColumnDeleteRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ColumnUpdatePosition implements ColumnUpdatePosition operation.
+//
+// Изменение позиции колонки.
+//
+// PATCH /api/v1/boards/{boardId}/columns/{columnId}/update-position
+func (UnimplementedHandler) ColumnUpdatePosition(ctx context.Context, req *ColumnUpdatePositionRequestBody, params ColumnUpdatePositionParams) (r ColumnUpdatePositionRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// TaskCreate implements TaskCreate operation.
+//
+// Создание задачи.
+//
+// POST /api/v1/boards/{boardId}/columns/{columnId}/tasks
+func (UnimplementedHandler) TaskCreate(ctx context.Context, req *TaskCreateRequestBody, params TaskCreateParams) (r TaskCreateRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// TaskDelete implements TaskDelete operation.
+//
+// Удаление задачи.
+//
+// POST /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
+func (UnimplementedHandler) TaskDelete(ctx context.Context, params TaskDeleteParams) (r TaskDeleteRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// TaskUpdatePosition implements TaskUpdatePosition operation.
+//
+// Изменение позиции задачи.
+//
+// PATCH /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}/update-position
+func (UnimplementedHandler) TaskUpdatePosition(ctx context.Context, req *TaskUpdatePositionRequestBody, params TaskUpdatePositionParams) (r TaskUpdatePositionRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // NewError creates *GenericErrorStatusCode from error returned by handler.
 //
 // Used for common default response.

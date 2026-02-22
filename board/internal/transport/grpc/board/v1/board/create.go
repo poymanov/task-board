@@ -1,4 +1,4 @@
-package v1
+package board
 
 import (
 	"context"
@@ -21,7 +21,7 @@ func (s *BoardService) Create(ctx context.Context, req *boardV1.BoardServiceCrea
 		OwnerID:     int(req.GetOwnerId()),
 	}
 
-	boardId, err := s.boardUseCase.Create(ctx, newBoard)
+	boardId, err := s.boardCreateUseCase.Create(ctx, newBoard)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to create board")
 		return nil, status.Errorf(codes.Internal, "error creating board: %v", err)

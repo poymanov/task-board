@@ -14,6 +14,54 @@ type Handler interface {
 	//
 	// POST /api/v1/boards
 	BoardCreate(ctx context.Context, req *CreateBoardRequestBody) (BoardCreateRes, error)
+	// BoardGet implements BoardGet operation.
+	//
+	// Получение доски.
+	//
+	// GET /api/v1/boards/{id}
+	BoardGet(ctx context.Context, params BoardGetParams) (BoardGetRes, error)
+	// BoardGetAll implements BoardGetAll operation.
+	//
+	// Получение досок.
+	//
+	// GET /api/v1/boards
+	BoardGetAll(ctx context.Context) (BoardGetAllRes, error)
+	// ColumnCreate implements ColumnCreate operation.
+	//
+	// Создание колонки.
+	//
+	// POST /api/v1/boards/{id}/columns
+	ColumnCreate(ctx context.Context, req *CreateColumnRequestBody, params ColumnCreateParams) (ColumnCreateRes, error)
+	// ColumnDelete implements ColumnDelete operation.
+	//
+	// Удаление колонки.
+	//
+	// DELETE /api/v1/boards/{boardId}/columns/{columnId}
+	ColumnDelete(ctx context.Context, params ColumnDeleteParams) (ColumnDeleteRes, error)
+	// ColumnUpdatePosition implements ColumnUpdatePosition operation.
+	//
+	// Изменение позиции колонки.
+	//
+	// PATCH /api/v1/boards/{boardId}/columns/{columnId}/update-position
+	ColumnUpdatePosition(ctx context.Context, req *ColumnUpdatePositionRequestBody, params ColumnUpdatePositionParams) (ColumnUpdatePositionRes, error)
+	// TaskCreate implements TaskCreate operation.
+	//
+	// Создание задачи.
+	//
+	// POST /api/v1/boards/{boardId}/columns/{columnId}/tasks
+	TaskCreate(ctx context.Context, req *TaskCreateRequestBody, params TaskCreateParams) (TaskCreateRes, error)
+	// TaskDelete implements TaskDelete operation.
+	//
+	// Удаление задачи.
+	//
+	// POST /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
+	TaskDelete(ctx context.Context, params TaskDeleteParams) (TaskDeleteRes, error)
+	// TaskUpdatePosition implements TaskUpdatePosition operation.
+	//
+	// Изменение позиции задачи.
+	//
+	// PATCH /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}/update-position
+	TaskUpdatePosition(ctx context.Context, req *TaskUpdatePositionRequestBody, params TaskUpdatePositionParams) (TaskUpdatePositionRes, error)
 	// NewError creates *GenericErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.

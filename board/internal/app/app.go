@@ -14,8 +14,23 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/poymanov/codemania-task-board/board/internal/config"
 	boardRepository "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/repository/board"
-	transportBoardV1 "github.com/poymanov/codemania-task-board/board/internal/transport/grpc/board/v1"
-	boardUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/board/create"
+	columnRepository "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/repository/column"
+	taskRepository "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/repository/task"
+	transportBoardV1 "github.com/poymanov/codemania-task-board/board/internal/transport/grpc/board/v1/board"
+	transportColumnV1 "github.com/poymanov/codemania-task-board/board/internal/transport/grpc/board/v1/column"
+	transportTaskV1 "github.com/poymanov/codemania-task-board/board/internal/transport/grpc/board/v1/task"
+	boardCreateUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/board/create"
+	boardDeleteUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/board/delete"
+	boardGetAllUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/board/get_all"
+	boardGetBoardUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/board/get_board"
+	columnCreateUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/column/create"
+	columnDeleteUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/column/delete"
+	columnGetAllUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/column/get_all"
+	columnUpdatePositionUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/column/update_position"
+	taskCreateUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/task/create"
+	taskGetDeleteUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/task/delete"
+	taskGetAllUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/task/get_all"
+	taskUpdatePositionUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/task/update_position"
 	"github.com/poymanov/codemania-task-board/platform/pkg/grpc/health"
 	"github.com/poymanov/codemania-task-board/platform/pkg/logger"
 	"github.com/poymanov/codemania-task-board/platform/pkg/migrator"
@@ -199,12 +214,36 @@ func (a *App) runMigrator() error {
 
 func (a *App) runGrpcServer() {
 	br := boardRepository.NewRepository(a.dbConnectionPool)
-	bus := boardUseCase.NewUseCase(br)
-	boardService := transportBoardV1.NewBoardService(bus)
+	cr := columnRepository.NewRepository(a.dbConnectionPool)
+	tr := taskRepository.NewRepository(a.dbConnectionPool)
+
+	bcuc := boardCreateUseCase.NewUseCase(br)
+	bgauc := boardGetAllUseCase.NewUseCase(br)
+	bduc := boardDeleteUseCase.NewUseCase(br)
+	bgbuc := boardGetBoardUseCase.NewUseCase(br, cr, tr)
+
+	boardService := transportBoardV1.NewBoardService(bcuc, bgauc, bduc, bgbuc)
+
+	ccuc := columnCreateUseCase.NewUseCase(br, cr)
+	cgauc := columnGetAllUseCase.NewUseCase(cr)
+	cduc := columnDeleteUseCase.NewUseCase(cr)
+	cupuc := columnUpdatePositionUseCase.NewUseCase(cr)
+
+	columnService := transportColumnV1.NewService(ccuc, cgauc, cduc, cupuc)
+
+	tcuc := taskCreateUseCase.NewUseCase(cr, tr)
+	tgauc := taskGetAllUseCase.NewUseCase(tr)
+	tduc := taskGetDeleteUseCase.NewUseCase(tr)
+	tupuc := taskUpdatePositionUseCase.NewUseCase(tr)
+
+	taskService := transportTaskV1.NewService(tcuc, tgauc, tduc, tupuc)
 
 	s := grpc.NewServer()
 
 	boardV1.RegisterBoardServiceServer(s, boardService)
+	boardV1.RegisterColumnServiceServer(s, columnService)
+	boardV1.RegisterTaskServiceServer(s, taskService)
+
 	health.RegisterService(s)
 
 	reflection.Register(s)
