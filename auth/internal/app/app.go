@@ -13,8 +13,10 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/poymanov/codemania-task-board/auth/internal/config"
+	"github.com/poymanov/codemania-task-board/auth/internal/infrastructure/jwt"
 	userRepository "github.com/poymanov/codemania-task-board/auth/internal/infrastructure/persistance/repository/user"
 	transportUserV1 "github.com/poymanov/codemania-task-board/auth/internal/transport/grpc/auth/v1/user"
+	loginUseCase "github.com/poymanov/codemania-task-board/auth/internal/usecase/user/login"
 	registerUserUseCase "github.com/poymanov/codemania-task-board/auth/internal/usecase/user/register"
 	"github.com/poymanov/codemania-task-board/platform/pkg/grpc/health"
 	"github.com/poymanov/codemania-task-board/platform/pkg/logger"
@@ -199,10 +201,12 @@ func (a *App) runMigrator() error {
 
 func (a *App) runGrpcServer() {
 	ur := userRepository.NewRepository(a.dbConnectionPool)
+	js := jwt.NewJWTService(a.config.JWT.AccessTokenTTL(), a.config.JWT.AccessTokenSecret())
 
 	ruuc := registerUserUseCase.NewUseCase(ur)
+	luc := loginUseCase.NewUseCase(ur, js)
 
-	userService := transportUserV1.NewService(ruuc)
+	userService := transportUserV1.NewService(ruuc, luc)
 
 	s := grpc.NewServer()
 

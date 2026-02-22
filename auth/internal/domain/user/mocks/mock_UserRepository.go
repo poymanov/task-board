@@ -95,6 +95,72 @@ func (_c *UserRepository_Create_Call) RunAndReturn(run func(ctx context.Context,
 	return _c
 }
 
+// GetByEmail provides a mock function for the type UserRepository
+func (_mock *UserRepository) GetByEmail(ctx context.Context, email string) (user.User, error) {
+	ret := _mock.Called(ctx, email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetByEmail")
+	}
+
+	var r0 user.User
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (user.User, error)); ok {
+		return returnFunc(ctx, email)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) user.User); ok {
+		r0 = returnFunc(ctx, email)
+	} else {
+		r0 = ret.Get(0).(user.User)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// UserRepository_GetByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByEmail'
+type UserRepository_GetByEmail_Call struct {
+	*mock.Call
+}
+
+// GetByEmail is a helper method to define mock.On call
+//   - ctx context.Context
+//   - email string
+func (_e *UserRepository_Expecter) GetByEmail(ctx interface{}, email interface{}) *UserRepository_GetByEmail_Call {
+	return &UserRepository_GetByEmail_Call{Call: _e.mock.On("GetByEmail", ctx, email)}
+}
+
+func (_c *UserRepository_GetByEmail_Call) Run(run func(ctx context.Context, email string)) *UserRepository_GetByEmail_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *UserRepository_GetByEmail_Call) Return(user1 user.User, err error) *UserRepository_GetByEmail_Call {
+	_c.Call.Return(user1, err)
+	return _c
+}
+
+func (_c *UserRepository_GetByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (user.User, error)) *UserRepository_GetByEmail_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // IsDuplicateKey provides a mock function for the type UserRepository
 func (_mock *UserRepository) IsDuplicateKey(err error) bool {
 	ret := _mock.Called(err)
@@ -142,6 +208,57 @@ func (_c *UserRepository_IsDuplicateKey_Call) Return(b bool) *UserRepository_IsD
 }
 
 func (_c *UserRepository_IsDuplicateKey_Call) RunAndReturn(run func(err error) bool) *UserRepository_IsDuplicateKey_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// IsNoRows provides a mock function for the type UserRepository
+func (_mock *UserRepository) IsNoRows(err error) bool {
+	ret := _mock.Called(err)
+
+	if len(ret) == 0 {
+		panic("no return value specified for IsNoRows")
+	}
+
+	var r0 bool
+	if returnFunc, ok := ret.Get(0).(func(error) bool); ok {
+		r0 = returnFunc(err)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+	return r0
+}
+
+// UserRepository_IsNoRows_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsNoRows'
+type UserRepository_IsNoRows_Call struct {
+	*mock.Call
+}
+
+// IsNoRows is a helper method to define mock.On call
+//   - err error
+func (_e *UserRepository_Expecter) IsNoRows(err interface{}) *UserRepository_IsNoRows_Call {
+	return &UserRepository_IsNoRows_Call{Call: _e.mock.On("IsNoRows", err)}
+}
+
+func (_c *UserRepository_IsNoRows_Call) Run(run func(err error)) *UserRepository_IsNoRows_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 error
+		if args[0] != nil {
+			arg0 = args[0].(error)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *UserRepository_IsNoRows_Call) Return(b bool) *UserRepository_IsNoRows_Call {
+	_c.Call.Return(b)
+	return _c
+}
+
+func (_c *UserRepository_IsNoRows_Call) RunAndReturn(run func(err error) bool) *UserRepository_IsNoRows_Call {
 	_c.Call.Return(run)
 	return _c
 }

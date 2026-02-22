@@ -18,7 +18,6 @@ func (s *Service) Register(ctx context.Context, req *authV1.UserServiceRegisterR
 	}
 
 	dto := registerUserUseCase.RegisterUserDTO{
-		Login:    req.Login,
 		Password: req.Password,
 		Email:    req.Email,
 		Username: req.Username,
@@ -28,7 +27,7 @@ func (s *Service) Register(ctx context.Context, req *authV1.UserServiceRegisterR
 	if err != nil {
 		errMessage := "failed to register user"
 
-		log.Error().Err(err).Any("req", req).Msg(errMessage)
+		log.Error().Err(err).Msg(errMessage)
 
 		if errors.Is(err, domainUser.ErrUserAlreadyExists) {
 			return nil, status.Error(codes.Internal, err.Error())

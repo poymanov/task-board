@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 
 	domainUser "github.com/poymanov/codemania-task-board/auth/internal/domain/user"
 )
@@ -14,7 +13,7 @@ func (r *Repository) Create(ctx context.Context, newUser domainUser.NewUser) err
 		newUser.Username, newUser.Email, newUser.Password,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to create user: %w", err)
+		return err
 	}
 
 	return nil

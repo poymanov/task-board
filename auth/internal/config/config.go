@@ -11,6 +11,7 @@ type Config struct {
 	Grpc   GrpcConfig
 	Logger LoggerConfig
 	Db     DbConfig
+	JWT    JWTConfig
 }
 
 func Load(path ...string) (*Config, error) {
@@ -35,9 +36,15 @@ func Load(path ...string) (*Config, error) {
 		return nil, err
 	}
 
+	jwt, err := env.NewJWTConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
 		Grpc:   grpcCfg,
 		Logger: loggerCfg,
 		Db:     db,
+		JWT:    jwt,
 	}, nil
 }

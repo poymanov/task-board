@@ -1,20 +1,17 @@
 package user
 
 type NewUser struct {
-	Login string
+	Email string
 
 	Password string
 
 	Username string
-
-	Email string
 }
 
-func NewNewUser(login, password, username, email string) NewUser {
+func NewNewUser(email, password, username string) NewUser {
 	return NewUser{
-		Login:    login,
+		Email:    email,
 		Password: password,
 		Username: username,
-		Email:    email,
 	}
 }

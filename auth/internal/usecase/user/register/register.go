@@ -23,7 +23,7 @@ func (u *UseCase) Register(ctx context.Context, registerUser RegisterUserDTO) er
 		return err
 	}
 
-	nu := domainUser.NewNewUser(registerUser.Login, string(password), registerUser.Username, registerUser.Email)
+	nu := domainUser.NewNewUser(registerUser.Email, string(password), registerUser.Username)
 
 	err = u.userRepository.Create(ctx, nu)
 	if err != nil {

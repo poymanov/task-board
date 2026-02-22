@@ -18,3 +18,6 @@ packages:
   github.com/poymanov/codemania-task-board/auth/internal/domain/user:
     config:
       include-interface-regex: .*Repository
+  github.com/poymanov/codemania-task-board/auth/internal/infrastructure/jwt:
+    config:
+      include-interface-regex: .*JWT
