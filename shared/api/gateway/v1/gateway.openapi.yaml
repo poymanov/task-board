@@ -429,6 +429,43 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
+  /api/v1/auth/login:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequestBody"
+      summary: "Аутентификация пользователя"
+      operationId: AuthLogin
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: "Пользователь успешно аутентифицирован"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        '400':
+          description: "Ошибка запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        '500':
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+        default:
+          description: "Прочие ошибки"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
 components:
   schemas:
     CreateBoardRequestBody:
@@ -525,6 +562,20 @@ components:
           type: string
           description: "Имя нового пользователя"
           example: "test"
+    LoginRequestBody:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          description: "Email нового пользователя"
+          example: "test@test.ru"
+        password:
+          type: string
+          description: "Пароль нового пользователя"
+          example: "123qwe"
     CreateBoardResponse:
       type: object
       required:
@@ -654,6 +705,15 @@ components:
             type: string
             description: "Описание доски"
             example: "Test description"
+    LoginResponse:
+      type: object
+      required:
+        - access_token
+      properties:
+        access_token:
+          type: string
+          description: "AccessToken для запросов"
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QzQHRlc3QucnUiLCJleHAiOjE3NzE3OTExODEsImlhdCI6MTc3MTc5MTE4MCwidHlwZSI6ImFjY2VzcyIsInVzZXJfaWQiOjgsInVzZXJuYW1lIjoidGVzdCJ9.9HxJvYTq_Y7Ob3zq3-kA54fPd0u10Zz9qI3eIU_HRU8"
     BadRequestError:
       type: object
       required:

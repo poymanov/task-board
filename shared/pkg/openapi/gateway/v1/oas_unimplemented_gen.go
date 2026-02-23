@@ -13,6 +13,15 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// AuthLogin implements AuthLogin operation.
+//
+// Аутентификация пользователя.
+//
+// POST /api/v1/auth/login
+func (UnimplementedHandler) AuthLogin(ctx context.Context, req *LoginRequestBody) (r AuthLoginRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // AuthRegister implements AuthRegister operation.
 //
 // Регистрация пользователя.

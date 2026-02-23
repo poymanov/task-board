@@ -43,6 +43,7 @@ func (s *BadRequestError) SetMessage(val string) {
 	s.Message = val
 }
 
+func (*BadRequestError) authLoginRes()            {}
 func (*BadRequestError) authRegisterRes()         {}
 func (*BadRequestError) boardCreateRes()          {}
 func (*BadRequestError) boardGetAllRes()          {}
@@ -490,6 +491,7 @@ func (s *InternalServerError) SetMessage(val string) {
 	s.Message = val
 }
 
+func (*InternalServerError) authLoginRes()            {}
 func (*InternalServerError) authRegisterRes()         {}
 func (*InternalServerError) boardCreateRes()          {}
 func (*InternalServerError) boardGetRes()             {}
@@ -499,6 +501,52 @@ func (*InternalServerError) columnUpdatePositionRes() {}
 func (*InternalServerError) taskCreateRes()           {}
 func (*InternalServerError) taskDeleteRes()           {}
 func (*InternalServerError) taskUpdatePositionRes()   {}
+
+// Ref: #/components/schemas/LoginRequestBody
+type LoginRequestBody struct {
+	// Email нового пользователя.
+	Email string `json:"email"`
+	// Пароль нового пользователя.
+	Password string `json:"password"`
+}
+
+// GetEmail returns the value of Email.
+func (s *LoginRequestBody) GetEmail() string {
+	return s.Email
+}
+
+// GetPassword returns the value of Password.
+func (s *LoginRequestBody) GetPassword() string {
+	return s.Password
+}
+
+// SetEmail sets the value of Email.
+func (s *LoginRequestBody) SetEmail(val string) {
+	s.Email = val
+}
+
+// SetPassword sets the value of Password.
+func (s *LoginRequestBody) SetPassword(val string) {
+	s.Password = val
+}
+
+// Ref: #/components/schemas/LoginResponse
+type LoginResponse struct {
+	// AccessToken для запросов.
+	AccessToken string `json:"access_token"`
+}
+
+// GetAccessToken returns the value of AccessToken.
+func (s *LoginResponse) GetAccessToken() string {
+	return s.AccessToken
+}
+
+// SetAccessToken sets the value of AccessToken.
+func (s *LoginResponse) SetAccessToken(val string) {
+	s.AccessToken = val
+}
+
+func (*LoginResponse) authLoginRes() {}
 
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {

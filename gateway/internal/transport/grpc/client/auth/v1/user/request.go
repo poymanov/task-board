@@ -7,3 +7,9 @@ type RegisterRequest struct {
 
 	Username string
 }
+
+type LoginRequest struct {
+	Email string
+
+	Password string
+}

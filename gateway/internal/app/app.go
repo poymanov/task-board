@@ -18,6 +18,7 @@ import (
 	columnGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/board/v1/column"
 	taskGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/board/v1/task"
 	apiV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/http/gateway/v1"
+	authLoginUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/auth/login"
 	authRegisterUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/auth/register"
 	boardCreateUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/create"
 	boardGetAllUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/get_all"
@@ -236,8 +237,9 @@ func (a *App) runHttpServer() error {
 	tduc := taskDeleteUseCase.NewUseCase(a.taskClient)
 	tupuc := taskUpdatePositionUseCase.NewUseCase(a.taskClient)
 	auuc := authRegisterUseCase.NewUseCase(a.userClient)
+	aluc := authLoginUseCase.NewUseCase(a.userClient)
 
-	api := apiV1.NewApi(bcuc, bgauc, ccuc, cduc, cupuc, tcuc, tduc, tupuc, bgbuc, auuc)
+	api := apiV1.NewApi(bcuc, bgauc, ccuc, cduc, cupuc, tcuc, tduc, tupuc, bgbuc, auuc, aluc)
 
 	gatewayServer, err := gatewayV1.NewServer(api)
 	if err != nil {
