@@ -150,13 +150,13 @@ func (a *App) InitDeps(ctx context.Context) error {
 func (a *App) InitDB(ctx context.Context) error {
 	pool, err := pgxpool.New(ctx, a.config.Db.Uri())
 	if err != nil {
-		log.Fatal().Err(err).Msg("db failed connect")
+		log.Error().Err(err).Msg("db failed connect")
 		return err
 	}
 
 	err = pool.Ping(ctx)
 	if err != nil {
-		log.Fatal().Err(err).Msg("db not available")
+		log.Error().Err(err).Msg("db not available")
 		return err
 
 	}
@@ -175,7 +175,7 @@ func (a *App) InitDB(ctx context.Context) error {
 func (a *App) initListener(_ context.Context) error {
 	list, err := net.Listen("tcp", a.config.Grpc.Address())
 	if err != nil {
-		log.Fatal().Err(err).Msg("failed to start listener")
+		log.Error().Err(err).Msg("failed to start listener")
 		return err
 	}
 
@@ -185,7 +185,7 @@ func (a *App) initListener(_ context.Context) error {
 		lerr := list.Close()
 
 		if lerr != nil && !errors.Is(lerr, net.ErrClosed) {
-			log.Fatal().Err(err).Msg("failed to close listener")
+			log.Error().Err(err).Msg("failed to close listener")
 
 			return lerr
 		}
@@ -252,7 +252,7 @@ func (a *App) runGrpcServer() {
 		log.Info().Msg(fmt.Sprintf("🚀 gRPC server listening on %s\n", a.config.Grpc.Address()))
 		err := s.Serve(a.listener)
 		if err != nil {
-			log.Fatal().Err(err).Msg("failed to serve grpc server")
+			log.Error().Err(err).Msg("failed to serve grpc server")
 			return
 		}
 	}()
@@ -265,9 +265,9 @@ func (a *App) runGrpcServer() {
 }
 
 func (a *App) Close() error {
-	for _, closer := range a.closer {
-		if err := closer(); err != nil {
-			log.Fatal().Err(err).Msg("failed to close application component")
+	for i := len(a.closer) - 1; i >= 0; i-- {
+		if err := a.closer[i](); err != nil {
+			log.Error().Err(err).Msg("failed to close application component")
 		}
 	}
 
