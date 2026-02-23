@@ -254,16 +254,11 @@ func (s *CreateBoardRequestBody) encodeFields(e *jx.Encoder) {
 		e.FieldStart("description")
 		e.Str(s.Description)
 	}
-	{
-		e.FieldStart("owner_id")
-		e.Int(s.OwnerID)
-	}
 }
 
-var jsonFieldsNameOfCreateBoardRequestBody = [3]string{
+var jsonFieldsNameOfCreateBoardRequestBody = [2]string{
 	0: "name",
 	1: "description",
-	2: "owner_id",
 }
 
 // Decode decodes CreateBoardRequestBody from json.
@@ -299,18 +294,6 @@ func (s *CreateBoardRequestBody) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"description\"")
 			}
-		case "owner_id":
-			requiredBitSet[0] |= 1 << 2
-			if err := func() error {
-				v, err := d.Int()
-				s.OwnerID = int(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"owner_id\"")
-			}
 		default:
 			return d.Skip()
 		}
@@ -321,7 +304,7 @@ func (s *CreateBoardRequestBody) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000111,
+		0b00000011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

@@ -4,16 +4,27 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/poymanov/codemania-task-board/gateway/internal/infrastructure/security"
 	"github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/create"
 	gatewayV1 "github.com/poymanov/codemania-task-board/shared/pkg/openapi/gateway/v1"
 	"github.com/rs/zerolog/log"
 )
 
 func (a *Api) BoardCreate(ctx context.Context, req *gatewayV1.CreateBoardRequestBody) (gatewayV1.BoardCreateRes, error) {
+	userId, ok := security.GetUserID(ctx)
+
+	if !ok {
+		log.Error().Msg("Failed to get user id from context")
+		return &gatewayV1.BadRequestError{
+			Code:    http.StatusBadRequest,
+			Message: "Create board failed",
+		}, nil
+	}
+
 	createBoardDTO := create.CreateBoardDTO{
 		Name:        req.GetName(),
 		Description: req.GetDescription(),
-		OwnerId:     req.GetOwnerID(),
+		OwnerId:     userId,
 	}
 
 	boardId, err := a.boardCreateUseCase.Create(ctx, createBoardDTO)

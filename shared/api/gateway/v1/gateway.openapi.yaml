@@ -496,7 +496,6 @@ components:
       required:
         - name
         - description
-        - owner_id
       properties:
         name:
           type: string
@@ -506,10 +505,6 @@ components:
           type: string
           description: "Описание доски"
           example: "Запланированное"
-        owner_id:
-          type: integer
-          description: "ID автора доски"
-          example: 1
     CreateColumnRequestBody:
       type: object
       required:

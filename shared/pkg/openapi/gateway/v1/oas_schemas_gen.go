@@ -124,8 +124,6 @@ type CreateBoardRequestBody struct {
 	Name string `json:"name"`
 	// Описание доски.
 	Description string `json:"description"`
-	// ID автора доски.
-	OwnerID int `json:"owner_id"`
 }
 
 // GetName returns the value of Name.
@@ -138,11 +136,6 @@ func (s *CreateBoardRequestBody) GetDescription() string {
 	return s.Description
 }
 
-// GetOwnerID returns the value of OwnerID.
-func (s *CreateBoardRequestBody) GetOwnerID() int {
-	return s.OwnerID
-}
-
 // SetName sets the value of Name.
 func (s *CreateBoardRequestBody) SetName(val string) {
 	s.Name = val
@@ -151,11 +144,6 @@ func (s *CreateBoardRequestBody) SetName(val string) {
 // SetDescription sets the value of Description.
 func (s *CreateBoardRequestBody) SetDescription(val string) {
 	s.Description = val
-}
-
-// SetOwnerID sets the value of OwnerID.
-func (s *CreateBoardRequestBody) SetOwnerID(val int) {
-	s.OwnerID = val
 }
 
 // Ref: #/components/schemas/CreateBoardResponse
