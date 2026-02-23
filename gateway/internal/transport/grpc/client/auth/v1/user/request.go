@@ -13,3 +13,7 @@ type LoginRequest struct {
 
 	Password string
 }
+
+type WhoamiRequest struct {
+	AccessToken string
+}

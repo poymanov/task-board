@@ -55,6 +55,31 @@ func (*BadRequestError) taskCreateRes()           {}
 func (*BadRequestError) taskDeleteRes()           {}
 func (*BadRequestError) taskUpdatePositionRes()   {}
 
+type BearerAuth struct {
+	Token string
+	Roles []string
+}
+
+// GetToken returns the value of Token.
+func (s *BearerAuth) GetToken() string {
+	return s.Token
+}
+
+// GetRoles returns the value of Roles.
+func (s *BearerAuth) GetRoles() []string {
+	return s.Roles
+}
+
+// SetToken sets the value of Token.
+func (s *BearerAuth) SetToken(val string) {
+	s.Token = val
+}
+
+// SetRoles sets the value of Roles.
+func (s *BearerAuth) SetRoles(val []string) {
+	s.Roles = val
+}
+
 // ColumnDeleteNoContent is response for ColumnDelete operation.
 type ColumnDeleteNoContent struct{}
 

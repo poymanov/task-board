@@ -16,7 +16,12 @@ import (
 	taskDeleteUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/delete"
 	taskUpdatePositionUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/update_position"
 	gatewayV1 "github.com/poymanov/codemania-task-board/shared/pkg/openapi/gateway/v1"
+	"github.com/rs/zerolog/log"
 )
+
+type SecurityHandler interface {
+	BearerAuth(ctx context.Context, token string) (context.Context, error)
+}
 
 type Api struct {
 	boardCreateUseCase          *boardCreateUseCase.UseCase
@@ -68,4 +73,10 @@ func (a *Api) NewError(_ context.Context, err error) *gatewayV1.GenericErrorStat
 			Message: gatewayV1.NewOptString(err.Error()),
 		},
 	}
+}
+
+func (a *Api) BearerAuth(ctx context.Context, token string) (context.Context, error) {
+	log.Info().Any("token", token).Msg("bearer token")
+
+	return ctx, nil
 }

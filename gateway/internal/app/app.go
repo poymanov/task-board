@@ -13,6 +13,7 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/adaptor"
 	loggerMiddleware "github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/poymanov/codemania-task-board/gateway/internal/config"
+	"github.com/poymanov/codemania-task-board/gateway/internal/infrastructure/security"
 	userGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/auth/v1/user"
 	boardGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/board/v1/board"
 	columnGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/board/v1/column"
@@ -20,6 +21,7 @@ import (
 	apiV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/http/gateway/v1"
 	authLoginUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/auth/login"
 	authRegisterUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/auth/register"
+	authWhoamiUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/auth/whoami"
 	boardCreateUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/create"
 	boardGetAllUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/get_all"
 	boardGetBoardUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/get_board"
@@ -239,9 +241,13 @@ func (a *App) runHttpServer() error {
 	auuc := authRegisterUseCase.NewUseCase(a.userClient)
 	aluc := authLoginUseCase.NewUseCase(a.userClient)
 
+	awus := authWhoamiUseCase.NewUseCase(a.userClient)
+
 	api := apiV1.NewApi(bcuc, bgauc, ccuc, cduc, cupuc, tcuc, tduc, tupuc, bgbuc, auuc, aluc)
 
-	gatewayServer, err := gatewayV1.NewServer(api)
+	sh := security.NewSecurityHandler(awus)
+
+	gatewayServer, err := gatewayV1.NewServer(api, sh)
 	if err != nil {
 		return err
 	}
