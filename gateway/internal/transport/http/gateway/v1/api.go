@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	authRegisterUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/auth/register"
 	boardCreateUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/create"
 	boardGetAllUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/get_all"
 	boardGetBoardUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/get_board"
@@ -26,6 +27,7 @@ type Api struct {
 	taskDeleteUseCase           *taskDeleteUseCase.UseCase
 	taskUpdatePositionUseCase   *taskUpdatePositionUseCase.UseCase
 	boardGetBoardUseCase        *boardGetBoardUseCase.UseCase
+	authRegisterUseCase         *authRegisterUseCase.UseCase
 }
 
 func NewApi(
@@ -38,6 +40,7 @@ func NewApi(
 	taskDeleteUseCase *taskDeleteUseCase.UseCase,
 	taskUpdatePositionUseCase *taskUpdatePositionUseCase.UseCase,
 	boardGetBoardUseCase *boardGetBoardUseCase.UseCase,
+	authRegisterUseCase *authRegisterUseCase.UseCase,
 ) *Api {
 	return &Api{
 		boardCreateUseCase:          boardCreateUseCase,
@@ -49,6 +52,7 @@ func NewApi(
 		taskDeleteUseCase:           taskDeleteUseCase,
 		taskUpdatePositionUseCase:   taskUpdatePositionUseCase,
 		boardGetBoardUseCase:        boardGetBoardUseCase,
+		authRegisterUseCase:         authRegisterUseCase,
 	}
 }
 

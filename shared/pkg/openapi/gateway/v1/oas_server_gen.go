@@ -8,6 +8,12 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// AuthRegister implements AuthRegister operation.
+	//
+	// Регистрация пользователя.
+	//
+	// POST /api/v1/auth/register
+	AuthRegister(ctx context.Context, req *RegisterRequestBody) (AuthRegisterRes, error)
 	// BoardCreate implements BoardCreate operation.
 	//
 	// Создание доски.

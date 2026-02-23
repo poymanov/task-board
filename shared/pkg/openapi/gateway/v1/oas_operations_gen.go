@@ -6,6 +6,7 @@ package gateway_v1
 type OperationName = string
 
 const (
+	AuthRegisterOperation         OperationName = "AuthRegister"
 	BoardCreateOperation          OperationName = "BoardCreate"
 	BoardGetOperation             OperationName = "BoardGet"
 	BoardGetAllOperation          OperationName = "BoardGetAll"

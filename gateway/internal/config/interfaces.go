@@ -15,4 +15,5 @@ type HttpConfig interface {
 
 type GrpcClientConfig interface {
 	BoardAddress() string
+	AuthAddress() string
 }

@@ -10,6 +10,11 @@ func (s *GenericErrorStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
+// AuthRegisterCreated is response for AuthRegister operation.
+type AuthRegisterCreated struct{}
+
+func (*AuthRegisterCreated) authRegisterRes() {}
+
 // Ref: #/components/schemas/BadRequestError
 type BadRequestError struct {
 	// HTTP-код ошибки.
@@ -38,6 +43,7 @@ func (s *BadRequestError) SetMessage(val string) {
 	s.Message = val
 }
 
+func (*BadRequestError) authRegisterRes()         {}
 func (*BadRequestError) boardCreateRes()          {}
 func (*BadRequestError) boardGetAllRes()          {}
 func (*BadRequestError) boardGetRes()             {}
@@ -484,6 +490,7 @@ func (s *InternalServerError) SetMessage(val string) {
 	s.Message = val
 }
 
+func (*InternalServerError) authRegisterRes()         {}
 func (*InternalServerError) boardCreateRes()          {}
 func (*InternalServerError) boardGetRes()             {}
 func (*InternalServerError) columnCreateRes()         {}
@@ -583,6 +590,46 @@ func (o OptString) Or(d string) string {
 		return v
 	}
 	return d
+}
+
+// Ref: #/components/schemas/RegisterRequestBody
+type RegisterRequestBody struct {
+	// Email нового пользователя.
+	Email string `json:"email"`
+	// Пароль нового пользователя.
+	Password string `json:"password"`
+	// Имя нового пользователя.
+	Username string `json:"username"`
+}
+
+// GetEmail returns the value of Email.
+func (s *RegisterRequestBody) GetEmail() string {
+	return s.Email
+}
+
+// GetPassword returns the value of Password.
+func (s *RegisterRequestBody) GetPassword() string {
+	return s.Password
+}
+
+// GetUsername returns the value of Username.
+func (s *RegisterRequestBody) GetUsername() string {
+	return s.Username
+}
+
+// SetEmail sets the value of Email.
+func (s *RegisterRequestBody) SetEmail(val string) {
+	s.Email = val
+}
+
+// SetPassword sets the value of Password.
+func (s *RegisterRequestBody) SetPassword(val string) {
+	s.Password = val
+}
+
+// SetUsername sets the value of Username.
+func (s *RegisterRequestBody) SetUsername(val string) {
+	s.Username = val
 }
 
 // Ref: #/components/schemas/TaskCreateRequestBody

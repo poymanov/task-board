@@ -13,6 +13,15 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// AuthRegister implements AuthRegister operation.
+//
+// Регистрация пользователя.
+//
+// POST /api/v1/auth/register
+func (UnimplementedHandler) AuthRegister(ctx context.Context, req *RegisterRequestBody) (r AuthRegisterRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // BoardCreate implements BoardCreate operation.
 //
 // Создание доски.
