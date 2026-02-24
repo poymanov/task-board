@@ -15,17 +15,17 @@ type UseCase struct {
 
 	columnRepository domainColumn.ColumnRepository
 
-	domainOutboxEventRepository domainOutboxEvent.OutboxEventRepository
+	outboxEventRepository domainOutboxEvent.OutboxEventRepository
 
 	taskRepository domainTask.TaskRepository
 }
 
-func NewUseCase(columnRepository domainColumn.ColumnRepository, taskRepository domainTask.TaskRepository, domainOutboxEventRepository domainOutboxEvent.OutboxEventRepository, txManager tx_manager.Tx) *UseCase {
+func NewUseCase(columnRepository domainColumn.ColumnRepository, taskRepository domainTask.TaskRepository, outboxEventRepository domainOutboxEvent.OutboxEventRepository, txManager tx_manager.Tx) *UseCase {
 	return &UseCase{
-		columnRepository:            columnRepository,
-		taskRepository:              taskRepository,
-		domainOutboxEventRepository: domainOutboxEventRepository,
-		txManager:                   txManager,
+		columnRepository:      columnRepository,
+		taskRepository:        taskRepository,
+		outboxEventRepository: outboxEventRepository,
+		txManager:             txManager,
 	}
 }
 
@@ -51,7 +51,7 @@ func (u *UseCase) Create(ctx context.Context, newTask NewTaskDTO) (int, error) {
 			return err
 		}
 
-		outboxEventRepo := u.domainOutboxEventRepository.WithTx(tx)
+		outboxEventRepo := u.outboxEventRepository.WithTx(tx)
 
 		eventPayload := map[string]string{
 			"event": "create",

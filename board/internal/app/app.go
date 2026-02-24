@@ -238,7 +238,7 @@ func (a *App) runGrpcServer() {
 
 	tcuc := taskCreateUseCase.NewUseCase(cr, tr, oer, txm)
 	tgauc := taskGetAllUseCase.NewUseCase(tr)
-	tduc := taskGetDeleteUseCase.NewUseCase(tr)
+	tduc := taskGetDeleteUseCase.NewUseCase(tr, oer, txm)
 	tupuc := taskUpdatePositionUseCase.NewUseCase(tr)
 
 	taskService := transportTaskV1.NewService(tcuc, tgauc, tduc, tupuc)

@@ -271,14 +271,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 										if len(elem) == 0 {
 											switch r.Method {
-											case "POST":
+											case "DELETE":
 												s.handleTaskDeleteRequest([3]string{
 													args[0],
 													args[1],
 													args[2],
 												}, elemIsEscaped, w, r)
 											default:
-												s.notAllowed(w, r, "POST")
+												s.notAllowed(w, r, "DELETE")
 											}
 
 											return
@@ -680,7 +680,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 										if len(elem) == 0 {
 											switch method {
-											case "POST":
+											case "DELETE":
 												r.name = TaskDeleteOperation
 												r.summary = "Удаление задачи"
 												r.operationID = "TaskDelete"

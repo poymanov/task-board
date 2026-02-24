@@ -313,7 +313,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/GenericError"
   /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}:
-    post:
+    delete:
       parameters:
         - in: path
           name: boardId

@@ -11,7 +11,7 @@ type TaskRepository interface {
 
 	GetAll(ctx context.Context, filter GetAllFilter, sort GetAllSort) ([]Task, error)
 
-	Delete(ctx context.Context, id int) error
+	Delete(ctx context.Context, id int) (bool, error)
 
 	UpdatePosition(ctx context.Context, id int, position float64) error
 

@@ -1769,13 +1769,13 @@ func (s *Server) handleTaskCreateRequest(args [2]string, argsEscaped bool, w htt
 //
 // Удаление задачи.
 //
-// POST /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
+// DELETE /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
 func (s *Server) handleTaskDeleteRequest(args [3]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("TaskDelete"),
-		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}"),
 	}
 
