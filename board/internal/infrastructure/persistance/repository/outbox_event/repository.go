@@ -1,9 +1,9 @@
-package task
+package outbox_event
 
 import (
 	"github.com/jackc/pgx/v5"
 	domainCommon "github.com/poymanov/codemania-task-board/board/internal/domain/common"
-	domainTask "github.com/poymanov/codemania-task-board/board/internal/domain/task"
+	domainOutboxEvent "github.com/poymanov/codemania-task-board/board/internal/domain/outbox_event"
 )
 
 type Repository struct {
@@ -16,6 +16,6 @@ func NewRepository(pool domainCommon.DB) *Repository {
 	}
 }
 
-func (r *Repository) WithTx(tx pgx.Tx) domainTask.TaskRepository {
+func (r *Repository) WithTx(tx pgx.Tx) domainOutboxEvent.OutboxEventRepository {
 	return &Repository{pool: tx}
 }

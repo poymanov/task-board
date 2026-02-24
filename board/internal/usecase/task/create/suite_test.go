@@ -5,7 +5,9 @@ import (
 	"testing"
 
 	columnRepoMock "github.com/poymanov/codemania-task-board/board/internal/domain/column/mocks"
+	outboxEventRepoMock "github.com/poymanov/codemania-task-board/board/internal/domain/outbox_event/mocks"
 	taskRepoMock "github.com/poymanov/codemania-task-board/board/internal/domain/task/mocks"
+	txManagerMock "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/tx_manager/mocks"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -18,6 +20,10 @@ type UseCaseSuite struct {
 
 	columnRepository *columnRepoMock.ColumnRepository
 
+	outboxEventRepository *outboxEventRepoMock.OutboxEventRepository
+
+	txManager *txManagerMock.Tx
+
 	useCase *UseCase
 }
 
@@ -26,8 +32,10 @@ func (s *UseCaseSuite) SetupTest() {
 
 	s.columnRepository = columnRepoMock.NewColumnRepository(s.T())
 	s.taskRepository = taskRepoMock.NewTaskRepository(s.T())
+	s.outboxEventRepository = outboxEventRepoMock.NewOutboxEventRepository(s.T())
+	s.txManager = txManagerMock.NewTx(s.T())
 
-	s.useCase = NewUseCase(s.columnRepository, s.taskRepository)
+	s.useCase = NewUseCase(s.columnRepository, s.taskRepository, s.outboxEventRepository, s.txManager)
 }
 
 func (s *UseCaseSuite) TearDownTest() {

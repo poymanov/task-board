@@ -2,6 +2,8 @@ package task
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type TaskRepository interface {
@@ -14,4 +16,6 @@ type TaskRepository interface {
 	UpdatePosition(ctx context.Context, id int, position float64) error
 
 	IsExistsById(ctx context.Context, id int) (bool, error)
+
+	WithTx(tx pgx.Tx) TaskRepository
 }

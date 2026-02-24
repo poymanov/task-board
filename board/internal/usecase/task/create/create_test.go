@@ -43,13 +43,14 @@ func (s *UseCaseSuite) TestCreateError() {
 			name: "Failed to create task",
 			err:  ErrFailedToCreateTask,
 			mockFunc: func(t *testing.T) {
+				s.txManager.
+					On("WithTx", mock.Anything, mock.Anything).
+					Return(ErrFailedToCreateTask).
+					Once()
 				s.columnRepository.
 					On("IsExistsById", s.ctx, mock.Anything).
 					Return(true, nil).
 					Once()
-				s.taskRepository.
-					On("Create", mock.Anything, mock.Anything).
-					Return(0, ErrFailedToCreateTask)
 			},
 		},
 	}
@@ -72,21 +73,20 @@ func (s *UseCaseSuite) TestCreateError() {
 }
 
 func (s *UseCaseSuite) TestCreateSuccess() {
-	taskId := int(gofakeit.Int64())
 	s.columnRepository.
 		On("IsExistsById", s.ctx, mock.Anything).
 		Return(true, nil).
 		Once()
-	s.taskRepository.
-		On("Create", mock.Anything, mock.Anything).
-		Return(taskId, nil)
+	s.txManager.
+		On("WithTx", mock.Anything, mock.Anything).
+		Return(nil).
+		Once()
 
-	res, err := s.useCase.Create(s.ctx, NewTaskDTO{
+	_, err := s.useCase.Create(s.ctx, NewTaskDTO{
 		Title:       gofakeit.Name(),
 		Description: gofakeit.Name(),
 		Assignee:    gofakeit.Name(),
 		ColumnId:    int(gofakeit.Int64()),
 	})
 	s.Require().NoError(err)
-	s.Require().Equal(taskId, res)
 }

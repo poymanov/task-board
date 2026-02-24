@@ -15,7 +15,9 @@ import (
 	"github.com/poymanov/codemania-task-board/board/internal/config"
 	boardRepository "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/repository/board"
 	columnRepository "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/repository/column"
+	outboxEventRepository "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/repository/outbox_event"
 	taskRepository "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/repository/task"
+	"github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/tx_manager"
 	transportBoardV1 "github.com/poymanov/codemania-task-board/board/internal/transport/grpc/board/v1/board"
 	transportColumnV1 "github.com/poymanov/codemania-task-board/board/internal/transport/grpc/board/v1/column"
 	transportTaskV1 "github.com/poymanov/codemania-task-board/board/internal/transport/grpc/board/v1/task"
@@ -213,9 +215,12 @@ func (a *App) runMigrator() error {
 }
 
 func (a *App) runGrpcServer() {
+	txm := tx_manager.NewTxManager(a.dbConnectionPool)
+
 	br := boardRepository.NewRepository(a.dbConnectionPool)
 	cr := columnRepository.NewRepository(a.dbConnectionPool)
 	tr := taskRepository.NewRepository(a.dbConnectionPool)
+	oer := outboxEventRepository.NewRepository(a.dbConnectionPool)
 
 	bcuc := boardCreateUseCase.NewUseCase(br)
 	bgauc := boardGetAllUseCase.NewUseCase(br)
@@ -231,7 +236,7 @@ func (a *App) runGrpcServer() {
 
 	columnService := transportColumnV1.NewService(ccuc, cgauc, cduc, cupuc)
 
-	tcuc := taskCreateUseCase.NewUseCase(cr, tr)
+	tcuc := taskCreateUseCase.NewUseCase(cr, tr, oer, txm)
 	tgauc := taskGetAllUseCase.NewUseCase(tr)
 	tduc := taskGetDeleteUseCase.NewUseCase(tr)
 	tupuc := taskUpdatePositionUseCase.NewUseCase(tr)
