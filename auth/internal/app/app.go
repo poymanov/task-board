@@ -48,7 +48,7 @@ func newApp(ctx context.Context) (*App, error) {
 	return a, nil
 }
 
-func Run() error {
+func Run() (err error) {
 	ctx := context.Background()
 
 	a, err := newApp(ctx)
@@ -60,7 +60,8 @@ func Run() error {
 		ec := a.Close()
 		if ec != nil {
 			log.Error().Err(ec).Msg("failed to close app")
-			return
+
+			err = ec
 		}
 	}()
 
@@ -85,34 +86,21 @@ func (a *App) InitConfig(ctx context.Context) error {
 		defer cancel()
 	}
 
-	chDone := make(chan struct{})
-
-	var configErr error
-
-	go func() {
-		configPath := flag.String("env", ".env", "path to .env file")
-		flag.Parse()
-
-		cfg, err := config.Load(*configPath)
-
-		if err != nil {
-			configErr = fmt.Errorf("failed to load config: %w, config path: %s", err, *configPath)
-		} else {
-			a.config = cfg
-		}
-
-		chDone <- struct{}{}
-	}()
-
 	select {
 	case <-ctx.Done():
-		configErr = fmt.Errorf("config initialization timed out")
-	case <-chDone:
+		return fmt.Errorf("config initialization timed out")
+	default:
 	}
 
-	if configErr != nil {
-		return configErr
+	configPath := flag.String("env", ".env", "path to .env file")
+	flag.Parse()
+
+	cfg, err := config.Load(*configPath)
+	if err != nil {
+		return fmt.Errorf("failed to load config: %w, config path: %s", err, *configPath)
 	}
+
+	a.config = cfg
 
 	return nil
 }
@@ -219,7 +207,7 @@ func (a *App) runGrpcServer() {
 	reflection.Register(s)
 
 	go func() {
-		log.Info().Msg(fmt.Sprintf("🚀 gRPC server listening on %s\n", a.config.Grpc.Address()))
+		log.Info().Str("address", a.config.Grpc.Address()).Msg("🚀 gRPC server started")
 		err := s.Serve(a.listener)
 		if err != nil {
 			log.Error().Err(err).Msg("failed to serve grpc server")

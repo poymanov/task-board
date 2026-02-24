@@ -27,7 +27,10 @@ func (s *Service) Register(ctx context.Context, req *authV1.UserServiceRegisterR
 	if err != nil {
 		errMessage := "failed to register user"
 
-		log.Error().Err(err).Msg(errMessage)
+		log.Error().Err(err).
+			Str("email", req.GetEmail()).
+			Str("username", req.GetUsername()).
+			Msg(errMessage)
 
 		if errors.Is(err, domainUser.ErrUserAlreadyExists) {
 			return nil, status.Error(codes.Internal, err.Error())
