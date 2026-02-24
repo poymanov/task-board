@@ -13,10 +13,15 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/adaptor"
 	loggerMiddleware "github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/poymanov/codemania-task-board/gateway/internal/config"
+	"github.com/poymanov/codemania-task-board/gateway/internal/infrastructure/security"
+	userGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/auth/v1/user"
 	boardGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/board/v1/board"
 	columnGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/board/v1/column"
 	taskGrpcClientV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/grpc/client/board/v1/task"
 	apiV1 "github.com/poymanov/codemania-task-board/gateway/internal/transport/http/gateway/v1"
+	authLoginUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/auth/login"
+	authRegisterUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/auth/register"
+	authWhoamiUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/auth/whoami"
 	boardCreateUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/create"
 	boardGetAllUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/get_all"
 	boardGetBoardUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/get_board"
@@ -28,6 +33,7 @@ import (
 	taskUpdatePositionUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/update_position"
 	"github.com/poymanov/codemania-task-board/platform/pkg/logger"
 	gatewayV1 "github.com/poymanov/codemania-task-board/shared/pkg/openapi/gateway/v1"
+	authV1 "github.com/poymanov/codemania-task-board/shared/pkg/proto/auth/v1"
 	boardV1 "github.com/poymanov/codemania-task-board/shared/pkg/proto/board/v1"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
@@ -42,6 +48,7 @@ type App struct {
 	boardClient  *boardGrpcClientV1.BoardClient
 	columnClient *columnGrpcClientV1.Client
 	taskClient   *taskGrpcClientV1.Client
+	userClient   *userGrpcClientV1.Client
 }
 
 func newApp(ctx context.Context) (*App, error) {
@@ -134,24 +141,42 @@ func (a *App) initGrpcClients(ctx context.Context) error {
 	var clientErr error
 
 	go func() {
-		conn, err := grpc.NewClient(
+		connBoard, err := grpc.NewClient(
 			a.config.GrpcClient.BoardAddress(),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		)
 		if err != nil {
-			clientErr = fmt.Errorf("failed to connect grpc: %w", err)
+			clientErr = fmt.Errorf("failed to connect board grpc: %w", err)
 		}
 
-		boardServiceClient := boardV1.NewBoardServiceClient(conn)
-		columnServiceClient := boardV1.NewColumnServiceClient(conn)
-		taskServiceClient := boardV1.NewTaskServiceClient(conn)
+		connAuth, err := grpc.NewClient(
+			a.config.GrpcClient.AuthAddress(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
+		if err != nil {
+			clientErr = fmt.Errorf("failed to connect auth grpc: %w", err)
+		}
+
+		boardServiceClient := boardV1.NewBoardServiceClient(connBoard)
+		columnServiceClient := boardV1.NewColumnServiceClient(connBoard)
+		taskServiceClient := boardV1.NewTaskServiceClient(connBoard)
+		userServiceClient := authV1.NewUserServiceClient(connAuth)
 
 		a.boardClient = boardGrpcClientV1.NewClient(boardServiceClient)
 		a.columnClient = columnGrpcClientV1.NewClient(columnServiceClient)
 		a.taskClient = taskGrpcClientV1.NewClient(taskServiceClient)
+		a.userClient = userGrpcClientV1.NewClient(userServiceClient)
 
 		a.closer = append(a.closer, func() error {
-			if cerr := conn.Close(); cerr != nil {
+			if cerr := connBoard.Close(); cerr != nil {
+				return cerr
+			}
+
+			return nil
+		})
+
+		a.closer = append(a.closer, func() error {
+			if cerr := connAuth.Close(); cerr != nil {
 				return cerr
 			}
 
@@ -213,10 +238,16 @@ func (a *App) runHttpServer() error {
 	tcuc := taskCreateUseCase.NewUseCase(a.taskClient)
 	tduc := taskDeleteUseCase.NewUseCase(a.taskClient)
 	tupuc := taskUpdatePositionUseCase.NewUseCase(a.taskClient)
+	auuc := authRegisterUseCase.NewUseCase(a.userClient)
+	aluc := authLoginUseCase.NewUseCase(a.userClient)
 
-	api := apiV1.NewApi(bcuc, bgauc, ccuc, cduc, cupuc, tcuc, tduc, tupuc, bgbuc)
+	awus := authWhoamiUseCase.NewUseCase(a.userClient)
 
-	gatewayServer, err := gatewayV1.NewServer(api)
+	api := apiV1.NewApi(bcuc, bgauc, ccuc, cduc, cupuc, tcuc, tduc, tupuc, bgbuc, auuc, aluc)
+
+	sh := security.NewSecurityHandler(awus)
+
+	gatewayServer, err := gatewayV1.NewServer(api, sh)
 	if err != nil {
 		return err
 	}
@@ -246,9 +277,9 @@ func (a *App) runHttpServer() error {
 }
 
 func (a *App) Close() error {
-	for _, closer := range a.closer {
-		if err := closer(); err != nil {
-			log.Fatal().Err(err).Msg("failed to close application component")
+	for i := len(a.closer) - 1; i >= 0; i-- {
+		if err := a.closer[i](); err != nil {
+			log.Error().Err(err).Msg("failed to close application component")
 		}
 	}
 

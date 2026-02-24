@@ -10,6 +10,11 @@ func (s *GenericErrorStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
+// AuthRegisterCreated is response for AuthRegister operation.
+type AuthRegisterCreated struct{}
+
+func (*AuthRegisterCreated) authRegisterRes() {}
+
 // Ref: #/components/schemas/BadRequestError
 type BadRequestError struct {
 	// HTTP-код ошибки.
@@ -38,6 +43,8 @@ func (s *BadRequestError) SetMessage(val string) {
 	s.Message = val
 }
 
+func (*BadRequestError) authLoginRes()            {}
+func (*BadRequestError) authRegisterRes()         {}
 func (*BadRequestError) boardCreateRes()          {}
 func (*BadRequestError) boardGetAllRes()          {}
 func (*BadRequestError) boardGetRes()             {}
@@ -47,6 +54,31 @@ func (*BadRequestError) columnUpdatePositionRes() {}
 func (*BadRequestError) taskCreateRes()           {}
 func (*BadRequestError) taskDeleteRes()           {}
 func (*BadRequestError) taskUpdatePositionRes()   {}
+
+type BearerAuth struct {
+	Token string
+	Roles []string
+}
+
+// GetToken returns the value of Token.
+func (s *BearerAuth) GetToken() string {
+	return s.Token
+}
+
+// GetRoles returns the value of Roles.
+func (s *BearerAuth) GetRoles() []string {
+	return s.Roles
+}
+
+// SetToken sets the value of Token.
+func (s *BearerAuth) SetToken(val string) {
+	s.Token = val
+}
+
+// SetRoles sets the value of Roles.
+func (s *BearerAuth) SetRoles(val []string) {
+	s.Roles = val
+}
 
 // ColumnDeleteNoContent is response for ColumnDelete operation.
 type ColumnDeleteNoContent struct{}
@@ -92,8 +124,6 @@ type CreateBoardRequestBody struct {
 	Name string `json:"name"`
 	// Описание доски.
 	Description string `json:"description"`
-	// ID автора доски.
-	OwnerID int `json:"owner_id"`
 }
 
 // GetName returns the value of Name.
@@ -106,11 +136,6 @@ func (s *CreateBoardRequestBody) GetDescription() string {
 	return s.Description
 }
 
-// GetOwnerID returns the value of OwnerID.
-func (s *CreateBoardRequestBody) GetOwnerID() int {
-	return s.OwnerID
-}
-
 // SetName sets the value of Name.
 func (s *CreateBoardRequestBody) SetName(val string) {
 	s.Name = val
@@ -119,11 +144,6 @@ func (s *CreateBoardRequestBody) SetName(val string) {
 // SetDescription sets the value of Description.
 func (s *CreateBoardRequestBody) SetDescription(val string) {
 	s.Description = val
-}
-
-// SetOwnerID sets the value of OwnerID.
-func (s *CreateBoardRequestBody) SetOwnerID(val int) {
-	s.OwnerID = val
 }
 
 // Ref: #/components/schemas/CreateBoardResponse
@@ -484,6 +504,8 @@ func (s *InternalServerError) SetMessage(val string) {
 	s.Message = val
 }
 
+func (*InternalServerError) authLoginRes()            {}
+func (*InternalServerError) authRegisterRes()         {}
 func (*InternalServerError) boardCreateRes()          {}
 func (*InternalServerError) boardGetRes()             {}
 func (*InternalServerError) columnCreateRes()         {}
@@ -492,6 +514,52 @@ func (*InternalServerError) columnUpdatePositionRes() {}
 func (*InternalServerError) taskCreateRes()           {}
 func (*InternalServerError) taskDeleteRes()           {}
 func (*InternalServerError) taskUpdatePositionRes()   {}
+
+// Ref: #/components/schemas/LoginRequestBody
+type LoginRequestBody struct {
+	// Email нового пользователя.
+	Email string `json:"email"`
+	// Пароль нового пользователя.
+	Password string `json:"password"`
+}
+
+// GetEmail returns the value of Email.
+func (s *LoginRequestBody) GetEmail() string {
+	return s.Email
+}
+
+// GetPassword returns the value of Password.
+func (s *LoginRequestBody) GetPassword() string {
+	return s.Password
+}
+
+// SetEmail sets the value of Email.
+func (s *LoginRequestBody) SetEmail(val string) {
+	s.Email = val
+}
+
+// SetPassword sets the value of Password.
+func (s *LoginRequestBody) SetPassword(val string) {
+	s.Password = val
+}
+
+// Ref: #/components/schemas/LoginResponse
+type LoginResponse struct {
+	// AccessToken для запросов.
+	AccessToken string `json:"access_token"`
+}
+
+// GetAccessToken returns the value of AccessToken.
+func (s *LoginResponse) GetAccessToken() string {
+	return s.AccessToken
+}
+
+// SetAccessToken sets the value of AccessToken.
+func (s *LoginResponse) SetAccessToken(val string) {
+	s.AccessToken = val
+}
+
+func (*LoginResponse) authLoginRes() {}
 
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {
@@ -583,6 +651,46 @@ func (o OptString) Or(d string) string {
 		return v
 	}
 	return d
+}
+
+// Ref: #/components/schemas/RegisterRequestBody
+type RegisterRequestBody struct {
+	// Email нового пользователя.
+	Email string `json:"email"`
+	// Пароль нового пользователя.
+	Password string `json:"password"`
+	// Имя нового пользователя.
+	Username string `json:"username"`
+}
+
+// GetEmail returns the value of Email.
+func (s *RegisterRequestBody) GetEmail() string {
+	return s.Email
+}
+
+// GetPassword returns the value of Password.
+func (s *RegisterRequestBody) GetPassword() string {
+	return s.Password
+}
+
+// GetUsername returns the value of Username.
+func (s *RegisterRequestBody) GetUsername() string {
+	return s.Username
+}
+
+// SetEmail sets the value of Email.
+func (s *RegisterRequestBody) SetEmail(val string) {
+	s.Email = val
+}
+
+// SetPassword sets the value of Password.
+func (s *RegisterRequestBody) SetPassword(val string) {
+	s.Password = val
+}
+
+// SetUsername sets the value of Username.
+func (s *RegisterRequestBody) SetUsername(val string) {
+	s.Username = val
 }
 
 // Ref: #/components/schemas/TaskCreateRequestBody

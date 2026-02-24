@@ -21,7 +21,7 @@ func (u *UseCase) Create(ctx context.Context, dto CreateBoardDTO) (int, error) {
 
 	boardId, err := u.boardClient.CreateBoard(ctx, createBoardRequest)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	return boardId, nil

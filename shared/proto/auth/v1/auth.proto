@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package auth.v1;
+
+import "validate/validate.proto";
+
+option go_package = "github.com/poymanov/codemania-task-board/pkg/proto/auth/v1;auth_v1";
+
+service UserService {
+  rpc Register(UserServiceRegisterRequest) returns (UserServiceRegisterResponse);
+  rpc Login(UserServiceLoginRequest) returns (UserServiceLoginResponse);
+  rpc Whoami(UserServiceWhoamiRequest) returns (UserServiceWhoamiResponse);
+}
+
+// Запрос на регистрацию пользователя
+message UserServiceRegisterRequest {
+  // Email пользователя
+  string email = 1 [(validate.rules).string.email = true];
+
+  // Пароль пользователя
+  string password = 2 [(validate.rules).string = {min_len: 1}];
+
+  // Имя пользователя
+  string username = 3 [(validate.rules).string = {min_len: 1}];
+}
+
+// Ответ на регистрацию пользователя
+message UserServiceRegisterResponse {
+
+}
+
+// Запрос на аутентификацию пользователя
+message UserServiceLoginRequest {
+  // Логин пользователя
+  string email = 1 [(validate.rules).string.email = true];
+
+  // Пароль пользователя
+  string password = 2 [(validate.rules).string = {min_len: 1}];
+}
+
+// Ответ на аутентификацию пользователя
+message UserServiceLoginResponse {
+  string access_token = 1;
+}
+// Запрос на проверку пользователя
+message UserServiceWhoamiRequest {
+  string access_token = 1 [(validate.rules).string = {min_len: 1}];
+}
+
+// Ответ на проверку пользователя
+message UserServiceWhoamiResponse {
+  // ID пользователя
+  int64 user_id = 1;
+
+  // Email пользователя
+  string email = 2;
+
+  // Имя пользователя
+  string username = 3;
+}

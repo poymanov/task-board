@@ -49,104 +49,139 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/api/v1/boards"
+		case '/': // Prefix: "/api/v1/"
 
-			if l := len("/api/v1/boards"); len(elem) >= l && elem[0:l] == "/api/v1/boards" {
+			if l := len("/api/v1/"); len(elem) >= l && elem[0:l] == "/api/v1/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
 			if len(elem) == 0 {
-				switch r.Method {
-				case "GET":
-					s.handleBoardGetAllRequest([0]string{}, elemIsEscaped, w, r)
-				case "POST":
-					s.handleBoardCreateRequest([0]string{}, elemIsEscaped, w, r)
-				default:
-					s.notAllowed(w, r, "GET,POST")
-				}
-
-				return
+				break
 			}
 			switch elem[0] {
-			case '/': // Prefix: "/"
+			case 'a': // Prefix: "auth/"
 
-				if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+				if l := len("auth/"); len(elem) >= l && elem[0:l] == "auth/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
-				// Param: "id"
-				// Match until "/"
-				idx := strings.IndexByte(elem, '/')
-				if idx < 0 {
-					idx = len(elem)
-				}
-				args[0] = elem[:idx]
-				elem = elem[idx:]
-
 				if len(elem) == 0 {
-					switch r.Method {
-					case "GET":
-						s.handleBoardGetRequest([1]string{
-							args[0],
-						}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, "GET")
-					}
-
-					return
+					break
 				}
 				switch elem[0] {
-				case '/': // Prefix: "/columns"
+				case 'l': // Prefix: "login"
 
-					if l := len("/columns"); len(elem) >= l && elem[0:l] == "/columns" {
+					if l := len("login"); len(elem) >= l && elem[0:l] == "login" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
+						// Leaf node.
 						switch r.Method {
 						case "POST":
-							s.handleColumnCreateRequest([1]string{
-								args[0],
-							}, elemIsEscaped, w, r)
+							s.handleAuthLoginRequest([0]string{}, elemIsEscaped, w, r)
 						default:
 							s.notAllowed(w, r, "POST")
 						}
 
 						return
 					}
-					switch elem[0] {
-					case '/': // Prefix: "/"
 
-						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+				case 'r': // Prefix: "register"
+
+					if l := len("register"); len(elem) >= l && elem[0:l] == "register" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleAuthRegisterRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "POST")
+						}
+
+						return
+					}
+
+				}
+
+			case 'b': // Prefix: "boards"
+
+				if l := len("boards"); len(elem) >= l && elem[0:l] == "boards" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch r.Method {
+					case "GET":
+						s.handleBoardGetAllRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleBoardCreateRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "GET,POST")
+					}
+
+					return
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch r.Method {
+						case "GET":
+							s.handleBoardGetRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/columns"
+
+						if l := len("/columns"); len(elem) >= l && elem[0:l] == "/columns" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
-						// Param: "columnId"
-						// Match until "/"
-						idx := strings.IndexByte(elem, '/')
-						if idx < 0 {
-							idx = len(elem)
-						}
-						args[1] = elem[:idx]
-						elem = elem[idx:]
-
 						if len(elem) == 0 {
 							switch r.Method {
-							case "DELETE":
-								s.handleColumnDeleteRequest([2]string{
+							case "POST":
+								s.handleColumnCreateRequest([1]string{
 									args[0],
-									args[1],
 								}, elemIsEscaped, w, r)
 							default:
-								s.notAllowed(w, r, "DELETE")
+								s.notAllowed(w, r, "POST")
 							}
 
 							return
@@ -160,56 +195,55 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								break
 							}
 
+							// Param: "columnId"
+							// Match until "/"
+							idx := strings.IndexByte(elem, '/')
+							if idx < 0 {
+								idx = len(elem)
+							}
+							args[1] = elem[:idx]
+							elem = elem[idx:]
+
 							if len(elem) == 0 {
-								break
+								switch r.Method {
+								case "DELETE":
+									s.handleColumnDeleteRequest([2]string{
+										args[0],
+										args[1],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "DELETE")
+								}
+
+								return
 							}
 							switch elem[0] {
-							case 't': // Prefix: "tasks"
+							case '/': // Prefix: "/"
 
-								if l := len("tasks"); len(elem) >= l && elem[0:l] == "tasks" {
+								if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 									elem = elem[l:]
 								} else {
 									break
 								}
 
 								if len(elem) == 0 {
-									switch r.Method {
-									case "POST":
-										s.handleTaskCreateRequest([2]string{
-											args[0],
-											args[1],
-										}, elemIsEscaped, w, r)
-									default:
-										s.notAllowed(w, r, "POST")
-									}
-
-									return
+									break
 								}
 								switch elem[0] {
-								case '/': // Prefix: "/"
+								case 't': // Prefix: "tasks"
 
-									if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+									if l := len("tasks"); len(elem) >= l && elem[0:l] == "tasks" {
 										elem = elem[l:]
 									} else {
 										break
 									}
 
-									// Param: "taskId"
-									// Match until "/"
-									idx := strings.IndexByte(elem, '/')
-									if idx < 0 {
-										idx = len(elem)
-									}
-									args[2] = elem[:idx]
-									elem = elem[idx:]
-
 									if len(elem) == 0 {
 										switch r.Method {
 										case "POST":
-											s.handleTaskDeleteRequest([3]string{
+											s.handleTaskCreateRequest([2]string{
 												args[0],
 												args[1],
-												args[2],
 											}, elemIsEscaped, w, r)
 										default:
 											s.notAllowed(w, r, "POST")
@@ -218,59 +252,93 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 										return
 									}
 									switch elem[0] {
-									case '/': // Prefix: "/update-position"
+									case '/': // Prefix: "/"
 
-										if l := len("/update-position"); len(elem) >= l && elem[0:l] == "/update-position" {
+										if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 											elem = elem[l:]
 										} else {
 											break
 										}
 
+										// Param: "taskId"
+										// Match until "/"
+										idx := strings.IndexByte(elem, '/')
+										if idx < 0 {
+											idx = len(elem)
+										}
+										args[2] = elem[:idx]
+										elem = elem[idx:]
+
 										if len(elem) == 0 {
-											// Leaf node.
 											switch r.Method {
-											case "PATCH":
-												s.handleTaskUpdatePositionRequest([3]string{
+											case "POST":
+												s.handleTaskDeleteRequest([3]string{
 													args[0],
 													args[1],
 													args[2],
 												}, elemIsEscaped, w, r)
 											default:
-												s.notAllowed(w, r, "PATCH")
+												s.notAllowed(w, r, "POST")
 											}
 
 											return
 										}
+										switch elem[0] {
+										case '/': // Prefix: "/update-position"
+
+											if l := len("/update-position"); len(elem) >= l && elem[0:l] == "/update-position" {
+												elem = elem[l:]
+											} else {
+												break
+											}
+
+											if len(elem) == 0 {
+												// Leaf node.
+												switch r.Method {
+												case "PATCH":
+													s.handleTaskUpdatePositionRequest([3]string{
+														args[0],
+														args[1],
+														args[2],
+													}, elemIsEscaped, w, r)
+												default:
+													s.notAllowed(w, r, "PATCH")
+												}
+
+												return
+											}
+										}
 									}
-								}
 
-							case 'u': // Prefix: "update-position"
+								case 'u': // Prefix: "update-position"
 
-								if l := len("update-position"); len(elem) >= l && elem[0:l] == "update-position" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch r.Method {
-									case "PATCH":
-										s.handleColumnUpdatePositionRequest([2]string{
-											args[0],
-											args[1],
-										}, elemIsEscaped, w, r)
-									default:
-										s.notAllowed(w, r, "PATCH")
+									if l := len("update-position"); len(elem) >= l && elem[0:l] == "update-position" {
+										elem = elem[l:]
+									} else {
+										break
 									}
 
-									return
-								}
+									if len(elem) == 0 {
+										// Leaf node.
+										switch r.Method {
+										case "PATCH":
+											s.handleColumnUpdatePositionRequest([2]string{
+												args[0],
+												args[1],
+											}, elemIsEscaped, w, r)
+										default:
+											s.notAllowed(w, r, "PATCH")
+										}
 
+										return
+									}
+
+								}
 							}
 						}
 					}
 				}
+
 			}
 		}
 	}
@@ -358,88 +426,140 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/api/v1/boards"
+		case '/': // Prefix: "/api/v1/"
 
-			if l := len("/api/v1/boards"); len(elem) >= l && elem[0:l] == "/api/v1/boards" {
+			if l := len("/api/v1/"); len(elem) >= l && elem[0:l] == "/api/v1/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
 			if len(elem) == 0 {
-				switch method {
-				case "GET":
-					r.name = BoardGetAllOperation
-					r.summary = "Получение досок"
-					r.operationID = "BoardGetAll"
-					r.operationGroup = ""
-					r.pathPattern = "/api/v1/boards"
-					r.args = args
-					r.count = 0
-					return r, true
-				case "POST":
-					r.name = BoardCreateOperation
-					r.summary = "Создание доски"
-					r.operationID = "BoardCreate"
-					r.operationGroup = ""
-					r.pathPattern = "/api/v1/boards"
-					r.args = args
-					r.count = 0
-					return r, true
-				default:
-					return
-				}
+				break
 			}
 			switch elem[0] {
-			case '/': // Prefix: "/"
+			case 'a': // Prefix: "auth/"
 
-				if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+				if l := len("auth/"); len(elem) >= l && elem[0:l] == "auth/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
-				// Param: "id"
-				// Match until "/"
-				idx := strings.IndexByte(elem, '/')
-				if idx < 0 {
-					idx = len(elem)
-				}
-				args[0] = elem[:idx]
-				elem = elem[idx:]
-
 				if len(elem) == 0 {
-					switch method {
-					case "GET":
-						r.name = BoardGetOperation
-						r.summary = "Получение доски"
-						r.operationID = "BoardGet"
-						r.operationGroup = ""
-						r.pathPattern = "/api/v1/boards/{id}"
-						r.args = args
-						r.count = 1
-						return r, true
-					default:
-						return
-					}
+					break
 				}
 				switch elem[0] {
-				case '/': // Prefix: "/columns"
+				case 'l': // Prefix: "login"
 
-					if l := len("/columns"); len(elem) >= l && elem[0:l] == "/columns" {
+					if l := len("login"); len(elem) >= l && elem[0:l] == "login" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
+						// Leaf node.
 						switch method {
 						case "POST":
-							r.name = ColumnCreateOperation
-							r.summary = "Создание колонки"
-							r.operationID = "ColumnCreate"
+							r.name = AuthLoginOperation
+							r.summary = "Аутентификация пользователя"
+							r.operationID = "AuthLogin"
 							r.operationGroup = ""
-							r.pathPattern = "/api/v1/boards/{id}/columns"
+							r.pathPattern = "/api/v1/auth/login"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+				case 'r': // Prefix: "register"
+
+					if l := len("register"); len(elem) >= l && elem[0:l] == "register" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "POST":
+							r.name = AuthRegisterOperation
+							r.summary = "Регистрация пользователя"
+							r.operationID = "AuthRegister"
+							r.operationGroup = ""
+							r.pathPattern = "/api/v1/auth/register"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+				}
+
+			case 'b': // Prefix: "boards"
+
+				if l := len("boards"); len(elem) >= l && elem[0:l] == "boards" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						r.name = BoardGetAllOperation
+						r.summary = "Получение досок"
+						r.operationID = "BoardGetAll"
+						r.operationGroup = ""
+						r.pathPattern = "/api/v1/boards"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = BoardCreateOperation
+						r.summary = "Создание доски"
+						r.operationID = "BoardCreate"
+						r.operationGroup = ""
+						r.pathPattern = "/api/v1/boards"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							r.name = BoardGetOperation
+							r.summary = "Получение доски"
+							r.operationID = "BoardGet"
+							r.operationGroup = ""
+							r.pathPattern = "/api/v1/boards/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -448,33 +568,24 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 					switch elem[0] {
-					case '/': // Prefix: "/"
+					case '/': // Prefix: "/columns"
 
-						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						if l := len("/columns"); len(elem) >= l && elem[0:l] == "/columns" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
-						// Param: "columnId"
-						// Match until "/"
-						idx := strings.IndexByte(elem, '/')
-						if idx < 0 {
-							idx = len(elem)
-						}
-						args[1] = elem[:idx]
-						elem = elem[idx:]
-
 						if len(elem) == 0 {
 							switch method {
-							case "DELETE":
-								r.name = ColumnDeleteOperation
-								r.summary = "Удаление колонки"
-								r.operationID = "ColumnDelete"
+							case "POST":
+								r.name = ColumnCreateOperation
+								r.summary = "Создание колонки"
+								r.operationID = "ColumnCreate"
 								r.operationGroup = ""
-								r.pathPattern = "/api/v1/boards/{boardId}/columns/{columnId}"
+								r.pathPattern = "/api/v1/boards/{id}/columns"
 								r.args = args
-								r.count = 2
+								r.count = 1
 								return r, true
 							default:
 								return
@@ -489,84 +600,92 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								break
 							}
 
+							// Param: "columnId"
+							// Match until "/"
+							idx := strings.IndexByte(elem, '/')
+							if idx < 0 {
+								idx = len(elem)
+							}
+							args[1] = elem[:idx]
+							elem = elem[idx:]
+
 							if len(elem) == 0 {
-								break
+								switch method {
+								case "DELETE":
+									r.name = ColumnDeleteOperation
+									r.summary = "Удаление колонки"
+									r.operationID = "ColumnDelete"
+									r.operationGroup = ""
+									r.pathPattern = "/api/v1/boards/{boardId}/columns/{columnId}"
+									r.args = args
+									r.count = 2
+									return r, true
+								default:
+									return
+								}
 							}
 							switch elem[0] {
-							case 't': // Prefix: "tasks"
+							case '/': // Prefix: "/"
 
-								if l := len("tasks"); len(elem) >= l && elem[0:l] == "tasks" {
+								if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 									elem = elem[l:]
 								} else {
 									break
 								}
 
 								if len(elem) == 0 {
-									switch method {
-									case "POST":
-										r.name = TaskCreateOperation
-										r.summary = "Создание задачи"
-										r.operationID = "TaskCreate"
-										r.operationGroup = ""
-										r.pathPattern = "/api/v1/boards/{boardId}/columns/{columnId}/tasks"
-										r.args = args
-										r.count = 2
-										return r, true
-									default:
-										return
-									}
+									break
 								}
 								switch elem[0] {
-								case '/': // Prefix: "/"
+								case 't': // Prefix: "tasks"
 
-									if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+									if l := len("tasks"); len(elem) >= l && elem[0:l] == "tasks" {
 										elem = elem[l:]
 									} else {
 										break
 									}
 
-									// Param: "taskId"
-									// Match until "/"
-									idx := strings.IndexByte(elem, '/')
-									if idx < 0 {
-										idx = len(elem)
-									}
-									args[2] = elem[:idx]
-									elem = elem[idx:]
-
 									if len(elem) == 0 {
 										switch method {
 										case "POST":
-											r.name = TaskDeleteOperation
-											r.summary = "Удаление задачи"
-											r.operationID = "TaskDelete"
+											r.name = TaskCreateOperation
+											r.summary = "Создание задачи"
+											r.operationID = "TaskCreate"
 											r.operationGroup = ""
-											r.pathPattern = "/api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}"
+											r.pathPattern = "/api/v1/boards/{boardId}/columns/{columnId}/tasks"
 											r.args = args
-											r.count = 3
+											r.count = 2
 											return r, true
 										default:
 											return
 										}
 									}
 									switch elem[0] {
-									case '/': // Prefix: "/update-position"
+									case '/': // Prefix: "/"
 
-										if l := len("/update-position"); len(elem) >= l && elem[0:l] == "/update-position" {
+										if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 											elem = elem[l:]
 										} else {
 											break
 										}
 
+										// Param: "taskId"
+										// Match until "/"
+										idx := strings.IndexByte(elem, '/')
+										if idx < 0 {
+											idx = len(elem)
+										}
+										args[2] = elem[:idx]
+										elem = elem[idx:]
+
 										if len(elem) == 0 {
-											// Leaf node.
 											switch method {
-											case "PATCH":
-												r.name = TaskUpdatePositionOperation
-												r.summary = "Изменение позиции задачи"
-												r.operationID = "TaskUpdatePosition"
+											case "POST":
+												r.name = TaskDeleteOperation
+												r.summary = "Удаление задачи"
+												r.operationID = "TaskDelete"
 												r.operationGroup = ""
-												r.pathPattern = "/api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}/update-position"
+												r.pathPattern = "/api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}"
 												r.args = args
 												r.count = 3
 												return r, true
@@ -574,38 +693,65 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 												return
 											}
 										}
+										switch elem[0] {
+										case '/': // Prefix: "/update-position"
+
+											if l := len("/update-position"); len(elem) >= l && elem[0:l] == "/update-position" {
+												elem = elem[l:]
+											} else {
+												break
+											}
+
+											if len(elem) == 0 {
+												// Leaf node.
+												switch method {
+												case "PATCH":
+													r.name = TaskUpdatePositionOperation
+													r.summary = "Изменение позиции задачи"
+													r.operationID = "TaskUpdatePosition"
+													r.operationGroup = ""
+													r.pathPattern = "/api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}/update-position"
+													r.args = args
+													r.count = 3
+													return r, true
+												default:
+													return
+												}
+											}
+										}
 									}
-								}
 
-							case 'u': // Prefix: "update-position"
+								case 'u': // Prefix: "update-position"
 
-								if l := len("update-position"); len(elem) >= l && elem[0:l] == "update-position" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch method {
-									case "PATCH":
-										r.name = ColumnUpdatePositionOperation
-										r.summary = "Изменение позиции колонки"
-										r.operationID = "ColumnUpdatePosition"
-										r.operationGroup = ""
-										r.pathPattern = "/api/v1/boards/{boardId}/columns/{columnId}/update-position"
-										r.args = args
-										r.count = 2
-										return r, true
-									default:
-										return
+									if l := len("update-position"); len(elem) >= l && elem[0:l] == "update-position" {
+										elem = elem[l:]
+									} else {
+										break
 									}
-								}
 
+									if len(elem) == 0 {
+										// Leaf node.
+										switch method {
+										case "PATCH":
+											r.name = ColumnUpdatePositionOperation
+											r.summary = "Изменение позиции колонки"
+											r.operationID = "ColumnUpdatePosition"
+											r.operationGroup = ""
+											r.pathPattern = "/api/v1/boards/{boardId}/columns/{columnId}/update-position"
+											r.args = args
+											r.count = 2
+											return r, true
+										default:
+											return
+										}
+									}
+
+								}
 							}
 						}
 					}
 				}
+
 			}
 		}
 	}
