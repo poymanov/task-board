@@ -96,6 +96,137 @@ func (_c *OutboxEventRepository_Create_Call) RunAndReturn(run func(ctx context.C
 	return _c
 }
 
+// GetAllNotProcessedByType provides a mock function for the type OutboxEventRepository
+func (_mock *OutboxEventRepository) GetAllNotProcessedByType(ctx context.Context, entityType string, limit int) ([]outbox_event.OutboxEvent, error) {
+	ret := _mock.Called(ctx, entityType, limit)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAllNotProcessedByType")
+	}
+
+	var r0 []outbox_event.OutboxEvent
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, int) ([]outbox_event.OutboxEvent, error)); ok {
+		return returnFunc(ctx, entityType, limit)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, int) []outbox_event.OutboxEvent); ok {
+		r0 = returnFunc(ctx, entityType, limit)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]outbox_event.OutboxEvent)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string, int) error); ok {
+		r1 = returnFunc(ctx, entityType, limit)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// OutboxEventRepository_GetAllNotProcessedByType_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAllNotProcessedByType'
+type OutboxEventRepository_GetAllNotProcessedByType_Call struct {
+	*mock.Call
+}
+
+// GetAllNotProcessedByType is a helper method to define mock.On call
+//   - ctx context.Context
+//   - entityType string
+//   - limit int
+func (_e *OutboxEventRepository_Expecter) GetAllNotProcessedByType(ctx interface{}, entityType interface{}, limit interface{}) *OutboxEventRepository_GetAllNotProcessedByType_Call {
+	return &OutboxEventRepository_GetAllNotProcessedByType_Call{Call: _e.mock.On("GetAllNotProcessedByType", ctx, entityType, limit)}
+}
+
+func (_c *OutboxEventRepository_GetAllNotProcessedByType_Call) Run(run func(ctx context.Context, entityType string, limit int)) *OutboxEventRepository_GetAllNotProcessedByType_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *OutboxEventRepository_GetAllNotProcessedByType_Call) Return(outboxEvents []outbox_event.OutboxEvent, err error) *OutboxEventRepository_GetAllNotProcessedByType_Call {
+	_c.Call.Return(outboxEvents, err)
+	return _c
+}
+
+func (_c *OutboxEventRepository_GetAllNotProcessedByType_Call) RunAndReturn(run func(ctx context.Context, entityType string, limit int) ([]outbox_event.OutboxEvent, error)) *OutboxEventRepository_GetAllNotProcessedByType_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpdateEventProcessed provides a mock function for the type OutboxEventRepository
+func (_mock *OutboxEventRepository) UpdateEventProcessed(ctx context.Context, id int) error {
+	ret := _mock.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateEventProcessed")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) error); ok {
+		r0 = returnFunc(ctx, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// OutboxEventRepository_UpdateEventProcessed_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateEventProcessed'
+type OutboxEventRepository_UpdateEventProcessed_Call struct {
+	*mock.Call
+}
+
+// UpdateEventProcessed is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id int
+func (_e *OutboxEventRepository_Expecter) UpdateEventProcessed(ctx interface{}, id interface{}) *OutboxEventRepository_UpdateEventProcessed_Call {
+	return &OutboxEventRepository_UpdateEventProcessed_Call{Call: _e.mock.On("UpdateEventProcessed", ctx, id)}
+}
+
+func (_c *OutboxEventRepository_UpdateEventProcessed_Call) Run(run func(ctx context.Context, id int)) *OutboxEventRepository_UpdateEventProcessed_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 int
+		if args[1] != nil {
+			arg1 = args[1].(int)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *OutboxEventRepository_UpdateEventProcessed_Call) Return(err error) *OutboxEventRepository_UpdateEventProcessed_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *OutboxEventRepository_UpdateEventProcessed_Call) RunAndReturn(run func(ctx context.Context, id int) error) *OutboxEventRepository_UpdateEventProcessed_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // WithTx provides a mock function for the type OutboxEventRepository
 func (_mock *OutboxEventRepository) WithTx(tx pgx.Tx) outbox_event.OutboxEventRepository {
 	ret := _mock.Called(tx)

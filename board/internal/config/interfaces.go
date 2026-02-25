@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 type GrpcConfig interface {
 	Address() string
 }
@@ -11,4 +13,17 @@ type LoggerConfig interface {
 type DbConfig interface {
 	Uri() string
 	MigrationDirectory() string
+}
+
+type KafkaConfig interface {
+	Brokers() string
+}
+
+type TaskChangedProducerConfig interface {
+	Topic() string
+}
+
+type OutboxEventConfig interface {
+	CheckNotProcessedTaskInterval() time.Duration
+	CheckNotProcessedTaskLimit() int
 }
