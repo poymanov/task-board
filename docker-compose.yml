@@ -64,6 +64,16 @@ services:
     volumes:
       - '.:/app'
     command: ["go", "run", "gateway/cmd/main.go"]
+  notification:
+    build:
+      context: .
+      dockerfile: docker/notification/Dockerfile
+    volumes:
+      - '.:/app'
+    command: ["go", "run", "notification/cmd/main.go"]
+    depends_on:
+      kafka:
+        condition: service_healthy
   kafka:
     image: confluentinc/cp-kafka:7.9.0
     ports:

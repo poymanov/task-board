@@ -8,7 +8,7 @@ replace github.com/poymanov/codemania-task-board/platform => ../platform
 
 require (
 	github.com/brianvoe/gofakeit v3.18.0+incompatible
-	github.com/caarlos0/env/v11 v11.3.1
+	github.com/caarlos0/env/v11 v11.4.0
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/joho/godotenv v1.5.1
 	github.com/poymanov/codemania-task-board/platform v0.0.0-00010101000000-000000000000

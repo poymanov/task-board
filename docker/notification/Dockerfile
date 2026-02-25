@@ -5,11 +5,11 @@ ARG USER=1000
 
 WORKDIR /app
 
-COPY gateway/go.mod gateway/go.sum ./gateway/
 COPY platform/go.mod platform/go.sum ./platform/
 COPY shared/go.mod shared/go.sum ./shared/
+COPY notification/go.mod notification/go.sum ./notification/
 
-WORKDIR /app/gateway
+WORKDIR /app/notification
 RUN go mod download
 
 WORKDIR /app
