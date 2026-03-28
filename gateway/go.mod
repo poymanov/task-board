@@ -7,7 +7,7 @@ replace github.com/poymanov/codemania-task-board/shared => ../shared
 replace github.com/poymanov/codemania-task-board/platform => ../platform
 
 require (
-	github.com/caarlos0/env/v11 v11.3.1
+	github.com/caarlos0/env/v11 v11.4.0
 	github.com/gofiber/fiber/v3 v3.0.0
 	github.com/joho/godotenv v1.5.1
 	github.com/poymanov/codemania-task-board/platform v0.0.0-00010101000000-000000000000

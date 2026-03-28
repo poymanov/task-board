@@ -8,9 +8,12 @@ import (
 )
 
 type Config struct {
-	Grpc   GrpcConfig
-	Logger LoggerConfig
-	Db     DbConfig
+	Grpc                GrpcConfig
+	Logger              LoggerConfig
+	Db                  DbConfig
+	Kafka               KafkaConfig
+	TaskChangedProducer TaskChangedProducerConfig
+	OutboxEvent         OutboxEventConfig
 }
 
 func Load(path ...string) (*Config, error) {
@@ -35,9 +38,27 @@ func Load(path ...string) (*Config, error) {
 		return nil, err
 	}
 
+	kafka, err := env.NewKafkaConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	taskChangedProducer, err := env.NewTaskChangedProducerConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	outboxEvent, err := env.NewOutboxEventConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
-		Grpc:   grpcCfg,
-		Logger: loggerCfg,
-		Db:     db,
+		Grpc:                grpcCfg,
+		Logger:              loggerCfg,
+		Db:                  db,
+		Kafka:               kafka,
+		TaskChangedProducer: taskChangedProducer,
+		OutboxEvent:         outboxEvent,
 	}, nil
 }

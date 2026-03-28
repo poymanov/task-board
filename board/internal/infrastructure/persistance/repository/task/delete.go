@@ -4,11 +4,15 @@ import (
 	"context"
 )
 
-func (r *Repository) Delete(ctx context.Context, id int) error {
-	_, err := r.pool.Exec(ctx, "DELETE FROM tasks WHERE id=$1", id)
+func (r *Repository) Delete(ctx context.Context, id int) (bool, error) {
+	res, err := r.pool.Exec(ctx, "DELETE FROM tasks WHERE id=$1", id)
 	if err != nil {
-		return err
+		return false, err
 	}
 
-	return nil
+	if res.RowsAffected() > 0 {
+		return true, nil
+	}
+
+	return false, nil
 }

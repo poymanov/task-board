@@ -98,7 +98,7 @@ func (UnimplementedHandler) TaskCreate(ctx context.Context, req *TaskCreateReque
 //
 // Удаление задачи.
 //
-// POST /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
+// DELETE /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
 func (UnimplementedHandler) TaskDelete(ctx context.Context, params TaskDeleteParams) (r TaskDeleteRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

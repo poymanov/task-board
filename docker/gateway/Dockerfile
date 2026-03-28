@@ -14,8 +14,6 @@ RUN go mod download
 
 WORKDIR /app
 
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 RUN groupadd -g $GROUP user
 RUN useradd -u $USER -ms /bin/bash -g user user
 

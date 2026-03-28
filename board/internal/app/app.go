@@ -15,7 +15,9 @@ import (
 	"github.com/poymanov/codemania-task-board/board/internal/config"
 	boardRepository "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/repository/board"
 	columnRepository "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/repository/column"
+	outboxEventRepository "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/repository/outbox_event"
 	taskRepository "github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/repository/task"
+	"github.com/poymanov/codemania-task-board/board/internal/infrastructure/persistance/tx_manager"
 	transportBoardV1 "github.com/poymanov/codemania-task-board/board/internal/transport/grpc/board/v1/board"
 	transportColumnV1 "github.com/poymanov/codemania-task-board/board/internal/transport/grpc/board/v1/column"
 	transportTaskV1 "github.com/poymanov/codemania-task-board/board/internal/transport/grpc/board/v1/task"
@@ -27,6 +29,7 @@ import (
 	columnDeleteUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/column/delete"
 	columnGetAllUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/column/get_all"
 	columnUpdatePositionUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/column/update_position"
+	outboxEventsProcessTasksUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/outbox_event/process_tasks"
 	taskCreateUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/task/create"
 	taskGetDeleteUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/task/delete"
 	taskGetAllUseCase "github.com/poymanov/codemania-task-board/board/internal/usecase/task/get_all"
@@ -36,6 +39,7 @@ import (
 	"github.com/poymanov/codemania-task-board/platform/pkg/migrator"
 	boardV1 "github.com/poymanov/codemania-task-board/shared/pkg/proto/board/v1"
 	"github.com/rs/zerolog/log"
+	"github.com/segmentio/kafka-go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -47,6 +51,7 @@ type App struct {
 	listener         net.Listener
 	dbConnectionPool *pgxpool.Pool
 	config           *config.Config
+	txManager        *tx_manager.TxManager
 }
 
 func newApp(ctx context.Context) (*App, error) {
@@ -68,7 +73,10 @@ func Run() error {
 		return err
 	}
 
+	ctxOutboxEvent, cancel := context.WithCancel(ctx)
+
 	defer func() {
+		cancel()
 		ec := a.Close()
 		if ec != nil {
 			log.Error().Err(ec).Msg("failed to close app")
@@ -82,6 +90,7 @@ func Run() error {
 	}
 
 	a.runGrpcServer()
+	a.runOutboxEventProcessTasks(ctxOutboxEvent)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
@@ -162,6 +171,7 @@ func (a *App) InitDB(ctx context.Context) error {
 	}
 
 	a.dbConnectionPool = pool
+	a.txManager = tx_manager.NewTxManager(a.dbConnectionPool)
 
 	a.closer = append(a.closer, func() error {
 		pool.Close()
@@ -212,10 +222,54 @@ func (a *App) runMigrator() error {
 	return nil
 }
 
+func (a *App) runOutboxEventProcessTasks(ctx context.Context) {
+	go func() {
+		ticker := time.NewTicker(a.config.OutboxEvent.CheckNotProcessedTaskInterval())
+		defer ticker.Stop()
+
+		taskChangedProducer := &kafka.Writer{
+			Addr:                   kafka.TCP(a.config.Kafka.Brokers()),
+			Topic:                  a.config.TaskChangedProducer.Topic(),
+			Balancer:               &kafka.LeastBytes{},
+			AllowAutoTopicCreation: true,
+		}
+
+		oer := outboxEventRepository.NewRepository(a.dbConnectionPool)
+		oeptuc := outboxEventsProcessTasksUseCase.NewUseCase(oer, a.txManager, taskChangedProducer)
+
+		a.closer = append(a.closer, func() error {
+			if err := taskChangedProducer.Close(); err != nil {
+				log.Error().Err(err).Msg("failed to close writer")
+			}
+
+			return nil
+		})
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
+
+				err := oeptuc.Process(ctx, a.config.OutboxEvent.CheckNotProcessedTaskLimit())
+				if err != nil {
+					log.Error().Err(err).Msg("failed to process outbox events")
+				}
+			}
+		}
+	}()
+}
+
 func (a *App) runGrpcServer() {
 	br := boardRepository.NewRepository(a.dbConnectionPool)
 	cr := columnRepository.NewRepository(a.dbConnectionPool)
 	tr := taskRepository.NewRepository(a.dbConnectionPool)
+	oer := outboxEventRepository.NewRepository(a.dbConnectionPool)
 
 	bcuc := boardCreateUseCase.NewUseCase(br)
 	bgauc := boardGetAllUseCase.NewUseCase(br)
@@ -231,10 +285,10 @@ func (a *App) runGrpcServer() {
 
 	columnService := transportColumnV1.NewService(ccuc, cgauc, cduc, cupuc)
 
-	tcuc := taskCreateUseCase.NewUseCase(cr, tr)
+	tcuc := taskCreateUseCase.NewUseCase(cr, tr, oer, a.txManager)
 	tgauc := taskGetAllUseCase.NewUseCase(tr)
-	tduc := taskGetDeleteUseCase.NewUseCase(tr)
-	tupuc := taskUpdatePositionUseCase.NewUseCase(tr)
+	tduc := taskGetDeleteUseCase.NewUseCase(tr, oer, a.txManager)
+	tupuc := taskUpdatePositionUseCase.NewUseCase(tr, oer, a.txManager)
 
 	taskService := transportTaskV1.NewService(tcuc, tgauc, tduc, tupuc)
 
@@ -249,7 +303,7 @@ func (a *App) runGrpcServer() {
 	reflection.Register(s)
 
 	go func() {
-		log.Info().Msg(fmt.Sprintf("🚀 gRPC server listening on %s\n", a.config.Grpc.Address()))
+		log.Info().Str("address", a.config.Grpc.Address()).Msg("🚀 gRPC server started")
 		err := s.Serve(a.listener)
 		if err != nil {
 			log.Error().Err(err).Msg("failed to serve grpc server")

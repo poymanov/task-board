@@ -86,7 +86,7 @@ type Invoker interface {
 	//
 	// Удаление задачи.
 	//
-	// POST /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
+	// DELETE /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
 	TaskDelete(ctx context.Context, params TaskDeleteParams) (TaskDeleteRes, error)
 	// TaskUpdatePosition invokes TaskUpdatePosition operation.
 	//
@@ -1205,7 +1205,7 @@ func (c *Client) sendTaskCreate(ctx context.Context, request *TaskCreateRequestB
 //
 // Удаление задачи.
 //
-// POST /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
+// DELETE /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
 func (c *Client) TaskDelete(ctx context.Context, params TaskDeleteParams) (TaskDeleteRes, error) {
 	res, err := c.sendTaskDelete(ctx, params)
 	return res, err
@@ -1214,7 +1214,7 @@ func (c *Client) TaskDelete(ctx context.Context, params TaskDeleteParams) (TaskD
 func (c *Client) sendTaskDelete(ctx context.Context, params TaskDeleteParams) (res TaskDeleteRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("TaskDelete"),
-		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.URLTemplateKey.String("/api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
@@ -1309,7 +1309,7 @@ func (c *Client) sendTaskDelete(ctx context.Context, params TaskDeleteParams) (r
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "POST", u)
+	r, err := ht.NewRequest(ctx, "DELETE", u)
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
 	}

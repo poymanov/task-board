@@ -66,7 +66,7 @@ type Handler interface {
 	//
 	// Удаление задачи.
 	//
-	// POST /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
+	// DELETE /api/v1/boards/{boardId}/columns/{columnId}/tasks/{taskId}
 	TaskDelete(ctx context.Context, params TaskDeleteParams) (TaskDeleteRes, error)
 	// TaskUpdatePosition implements TaskUpdatePosition operation.
 	//

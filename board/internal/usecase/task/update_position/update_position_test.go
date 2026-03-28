@@ -47,9 +47,11 @@ func (s *UseCaseSuite) TestUpdatePositionError() {
 					On("IsExistsById", s.ctx, mock.Anything).
 					Return(true, nil).
 					Once()
-				s.taskRepository.
-					On("UpdatePosition", s.ctx, mock.Anything, mock.Anything).
-					Return(ErrFailedToUpdateTaskPosition)
+
+				s.txManager.
+					On("WithTx", mock.Anything, mock.Anything).
+					Return(ErrFailedToUpdateTaskPosition).
+					Once()
 			},
 		},
 	}
@@ -71,9 +73,10 @@ func (s *UseCaseSuite) TestUpdatePositionSuccess() {
 		On("IsExistsById", s.ctx, mock.Anything).
 		Return(true, nil).
 		Once()
-	s.taskRepository.
-		On("UpdatePosition", s.ctx, mock.Anything, mock.Anything).
-		Return(nil)
+	s.txManager.
+		On("WithTx", mock.Anything, mock.Anything).
+		Return(nil).
+		Once()
 
 	err := s.useCase.UpdatePosition(s.ctx, id, UpdatePositionDTO{LeftPosition: gofakeit.Float64(), RightPosition: gofakeit.Float64()})
 	s.Require().NoError(err)

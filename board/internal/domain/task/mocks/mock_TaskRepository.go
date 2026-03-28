@@ -7,6 +7,7 @@ package mocks
 import (
 	"context"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/poymanov/codemania-task-board/board/internal/domain/task"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -105,20 +106,29 @@ func (_c *TaskRepository_Create_Call) RunAndReturn(run func(ctx context.Context,
 }
 
 // Delete provides a mock function for the type TaskRepository
-func (_mock *TaskRepository) Delete(ctx context.Context, id int) error {
+func (_mock *TaskRepository) Delete(ctx context.Context, id int) (bool, error) {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Delete")
 	}
 
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, int) error); ok {
+	var r0 bool
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) (bool, error)); ok {
+		return returnFunc(ctx, id)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, int) bool); ok {
 		r0 = returnFunc(ctx, id)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(bool)
 	}
-	return r0
+	if returnFunc, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = returnFunc(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
 }
 
 // TaskRepository_Delete_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Delete'
@@ -151,12 +161,12 @@ func (_c *TaskRepository_Delete_Call) Run(run func(ctx context.Context, id int))
 	return _c
 }
 
-func (_c *TaskRepository_Delete_Call) Return(err error) *TaskRepository_Delete_Call {
-	_c.Call.Return(err)
+func (_c *TaskRepository_Delete_Call) Return(b bool, err error) *TaskRepository_Delete_Call {
+	_c.Call.Return(b, err)
 	return _c
 }
 
-func (_c *TaskRepository_Delete_Call) RunAndReturn(run func(ctx context.Context, id int) error) *TaskRepository_Delete_Call {
+func (_c *TaskRepository_Delete_Call) RunAndReturn(run func(ctx context.Context, id int) (bool, error)) *TaskRepository_Delete_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -360,6 +370,59 @@ func (_c *TaskRepository_UpdatePosition_Call) Return(err error) *TaskRepository_
 }
 
 func (_c *TaskRepository_UpdatePosition_Call) RunAndReturn(run func(ctx context.Context, id int, position float64) error) *TaskRepository_UpdatePosition_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// WithTx provides a mock function for the type TaskRepository
+func (_mock *TaskRepository) WithTx(tx pgx.Tx) task.TaskRepository {
+	ret := _mock.Called(tx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for WithTx")
+	}
+
+	var r0 task.TaskRepository
+	if returnFunc, ok := ret.Get(0).(func(pgx.Tx) task.TaskRepository); ok {
+		r0 = returnFunc(tx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(task.TaskRepository)
+		}
+	}
+	return r0
+}
+
+// TaskRepository_WithTx_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'WithTx'
+type TaskRepository_WithTx_Call struct {
+	*mock.Call
+}
+
+// WithTx is a helper method to define mock.On call
+//   - tx pgx.Tx
+func (_e *TaskRepository_Expecter) WithTx(tx interface{}) *TaskRepository_WithTx_Call {
+	return &TaskRepository_WithTx_Call{Call: _e.mock.On("WithTx", tx)}
+}
+
+func (_c *TaskRepository_WithTx_Call) Run(run func(tx pgx.Tx)) *TaskRepository_WithTx_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 pgx.Tx
+		if args[0] != nil {
+			arg0 = args[0].(pgx.Tx)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *TaskRepository_WithTx_Call) Return(taskRepository task.TaskRepository) *TaskRepository_WithTx_Call {
+	_c.Call.Return(taskRepository)
+	return _c
+}
+
+func (_c *TaskRepository_WithTx_Call) RunAndReturn(run func(tx pgx.Tx) task.TaskRepository) *TaskRepository_WithTx_Call {
 	_c.Call.Return(run)
 	return _c
 }
