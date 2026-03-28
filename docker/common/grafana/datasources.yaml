@@ -14,3 +14,15 @@ datasources:
           matcherRegex: '"trace_id":"(\w+)"'
           url: '$${__value.raw}'
           urlDisplayLabel: 'View Trace'
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    access: proxy
+    orgId: 1
+    url: http://prometheus:9090
+    basicAuth: false
+    isDefault: true
+    version: 1
+    editable: false
+    jsonData:
+      httpMethod: GET

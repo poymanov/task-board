@@ -15,6 +15,7 @@ import (
 	taskCreateUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/create"
 	taskDeleteUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/delete"
 	taskUpdatePositionUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/update_position"
+	"github.com/poymanov/codemania-task-board/platform/pkg/metrics"
 	gatewayV1 "github.com/poymanov/codemania-task-board/shared/pkg/openapi/gateway/v1"
 	"github.com/rs/zerolog/log"
 )
@@ -35,6 +36,7 @@ type Api struct {
 	boardGetBoardUseCase        *boardGetBoardUseCase.UseCase
 	authRegisterUseCase         *authRegisterUseCase.UseCase
 	authLoginUseCase            *authLoginUseCase.UseCase
+	httpMetrics                 *metrics.HTTPMetrics
 }
 
 func NewApi(
@@ -49,6 +51,7 @@ func NewApi(
 	boardGetBoardUseCase *boardGetBoardUseCase.UseCase,
 	authRegisterUseCase *authRegisterUseCase.UseCase,
 	authLoginUseCase *authLoginUseCase.UseCase,
+	httpMetrics *metrics.HTTPMetrics,
 ) *Api {
 	return &Api{
 		boardCreateUseCase:          boardCreateUseCase,
@@ -62,6 +65,7 @@ func NewApi(
 		boardGetBoardUseCase:        boardGetBoardUseCase,
 		authRegisterUseCase:         authRegisterUseCase,
 		authLoginUseCase:            authLoginUseCase,
+		httpMetrics:                 httpMetrics,
 	}
 }
 

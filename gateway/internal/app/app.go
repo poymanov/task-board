@@ -2,8 +2,10 @@ package app
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -32,9 +34,12 @@ import (
 	taskDeleteUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/delete"
 	taskUpdatePositionUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/update_position"
 	"github.com/poymanov/codemania-task-board/platform/pkg/logger"
+	"github.com/poymanov/codemania-task-board/platform/pkg/metrics"
 	gatewayV1 "github.com/poymanov/codemania-task-board/shared/pkg/openapi/gateway/v1"
 	authV1 "github.com/poymanov/codemania-task-board/shared/pkg/proto/auth/v1"
 	boardV1 "github.com/poymanov/codemania-task-board/shared/pkg/proto/board/v1"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -43,12 +48,14 @@ import (
 const defaultInitializationTimeout = time.Second * 10
 
 type App struct {
-	closer       []func() error
-	config       *config.Config
-	boardClient  *boardGrpcClientV1.BoardClient
-	columnClient *columnGrpcClientV1.Client
-	taskClient   *taskGrpcClientV1.Client
-	userClient   *userGrpcClientV1.Client
+	closer             []func() error
+	config             *config.Config
+	boardClient        *boardGrpcClientV1.BoardClient
+	columnClient       *columnGrpcClientV1.Client
+	taskClient         *taskGrpcClientV1.Client
+	userClient         *userGrpcClientV1.Client
+	httpMetrics        *metrics.HTTPMetrics
+	prometheusRegistry *prometheus.Registry
 }
 
 func newApp(ctx context.Context) (*App, error) {
@@ -82,6 +89,8 @@ func Run() error {
 	if err != nil {
 		return err
 	}
+
+	a.runMetricsHttpServer()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
@@ -199,6 +208,14 @@ func (a *App) initGrpcClients(ctx context.Context) error {
 	return nil
 }
 
+func (a *App) initHttpMetrics(_ context.Context) error {
+	reg := prometheus.NewRegistry()
+	a.httpMetrics = metrics.NewHTTPMetrics("gateway", reg)
+	a.prometheusRegistry = reg
+
+	return nil
+}
+
 func (a *App) initDeps(ctx context.Context) error {
 	if _, ok := ctx.Deadline(); !ok {
 		var cancel context.CancelFunc
@@ -210,6 +227,7 @@ func (a *App) initDeps(ctx context.Context) error {
 		a.initConfig,
 		a.initLogger,
 		a.initGrpcClients,
+		a.initHttpMetrics,
 	}
 
 	for _, f := range inits {
@@ -243,7 +261,7 @@ func (a *App) runHttpServer() error {
 
 	awus := authWhoamiUseCase.NewUseCase(a.userClient)
 
-	api := apiV1.NewApi(bcuc, bgauc, ccuc, cduc, cupuc, tcuc, tduc, tupuc, bgbuc, auuc, aluc)
+	api := apiV1.NewApi(bcuc, bgauc, ccuc, cduc, cupuc, tcuc, tduc, tupuc, bgbuc, auuc, aluc, a.httpMetrics)
 
 	sh := security.NewSecurityHandler(awus)
 
@@ -274,6 +292,35 @@ func (a *App) runHttpServer() error {
 	})
 
 	return nil
+}
+
+func (a *App) runMetricsHttpServer() {
+	mux := http.NewServeMux()
+	mux.Handle("/metrics", promhttp.HandlerFor(a.prometheusRegistry, promhttp.HandlerOpts{}))
+
+	server := &http.Server{
+		Addr:              a.config.HttpMetrics.Address(),
+		Handler:           mux,
+		ReadHeaderTimeout: a.config.Http.ReadTimeout(),
+	}
+
+	go func() {
+		log.Info().Msg("Starting metrics server")
+		err := server.ListenAndServe()
+
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Error().Err(err).Msg("failed to serve metrics http server")
+		}
+	}()
+
+	a.closer = append(a.closer, func() error {
+		esh := server.Shutdown(context.Background())
+		if esh != nil {
+			return esh
+		}
+
+		return nil
+	})
 }
 
 func (a *App) Close() error {

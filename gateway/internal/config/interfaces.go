@@ -14,6 +14,10 @@ type HttpConfig interface {
 	ReadTimeout() time.Duration
 }
 
+type HttpMetricsConfig interface {
+	Address() string
+}
+
 type GrpcClientConfig interface {
 	BoardAddress() string
 	AuthAddress() string

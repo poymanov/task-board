@@ -3,6 +3,8 @@ package v1
 import (
 	"context"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/poymanov/codemania-task-board/gateway/internal/infrastructure/security"
 	"github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/create"
@@ -61,11 +63,26 @@ func (a *Api) BoardGetAll(ctx context.Context) (gatewayV1.BoardGetAllRes, error)
 }
 
 func (a *Api) BoardGet(ctx context.Context, params gatewayV1.BoardGetParams) (gatewayV1.BoardGetRes, error) {
+	reqStart := time.Now()
 	board, err := a.boardGetBoardUseCase.Get(ctx, params.ID)
+	status := http.StatusOK
+
+	defer func() {
+		a.httpMetrics.RequestsTotal.
+			WithLabelValues("/api/v1/boards/{id}", http.MethodGet, strconv.Itoa(status)).
+			Inc()
+
+		a.httpMetrics.RequestDuration.
+			WithLabelValues("/api/v1/boards/{id}", http.MethodGet).
+			Observe(time.Since(reqStart).Seconds())
+	}()
+
 	if err != nil {
+		status = http.StatusBadRequest
+
 		log.Error().Err(err).Msg("get board failed")
 		return &gatewayV1.BadRequestError{
-			Code:    http.StatusBadRequest,
+			Code:    status,
 			Message: "Get board failed",
 		}, nil
 	}

@@ -85,6 +85,7 @@ services:
       dockerfile: docker/gateway/Dockerfile
     ports:
       - ${GATEWAY_HTTP_EXTERNAL_PORT}:${GATEWAY_HTTP_PORT}
+      - ${GATEWAY_HTTP_METRICS_PORT}:${GATEWAY_HTTP_METRICS_PORT}
     volumes:
       - '.:/app'
     command: ["go", "run", "gateway/cmd/main.go"]
@@ -193,6 +194,16 @@ services:
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor traceQLStreaming metricsSummary
     ports:
       - '${GRAFANA_UI_PORT}:3000'
+  prometheus:
+    image: prom/prometheus:v3
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --web.enable-remote-write-receiver
+      - --enable-feature=exemplar-storage
+    volumes:
+      - ./docker/common/prometheus/prometheus.yaml:/etc/prometheus.yaml
+    ports:
+      - '${PROMETHEUS_UI_PORT}:9090'
 volumes:
   postgres_board_data:
   postgres_auth_data:
