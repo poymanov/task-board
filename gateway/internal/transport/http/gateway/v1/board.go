@@ -70,5 +70,7 @@ func (a *Api) BoardGet(ctx context.Context, params gatewayV1.BoardGetParams) (ga
 		}, nil
 	}
 
+	log.Info().Int("id", params.ID).Msg("get board succeed")
+
 	return GetBoardDTOToTransport(board), nil
 }

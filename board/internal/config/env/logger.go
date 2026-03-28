@@ -5,7 +5,8 @@ import (
 )
 
 type loggerEnvConfig struct {
-	Level string `env:"BOARD_LOGGER_LEVEL,required"`
+	Level   string `env:"BOARD_LOGGER_LEVEL,required"`
+	AppName string `env:"BOARD_LOGGER_APP_NAME,required"`
 }
 
 type LoggerConfig struct {
@@ -24,4 +25,8 @@ func NewLoggerConfig() (*LoggerConfig, error) {
 
 func (cfg *LoggerConfig) Level() string {
 	return cfg.raw.Level
+}
+
+func (cfg *LoggerConfig) AppName() string {
+	return cfg.raw.AppName
 }

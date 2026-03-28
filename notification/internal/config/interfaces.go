@@ -2,6 +2,7 @@ package config
 
 type LoggerConfig interface {
 	Level() string
+	AppName() string
 }
 
 type KafkaConfig interface {

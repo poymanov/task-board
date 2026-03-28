@@ -6,6 +6,7 @@ import (
 
 type LoggerConfig interface {
 	Level() string
+	AppName() string
 }
 
 type HttpConfig interface {

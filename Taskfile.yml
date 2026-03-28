@@ -267,3 +267,6 @@ tasks:
     cmds:
       - task: proto:gen
       - task: ogen:gen
+  install-loki-docker-plugin:
+    cmds:
+      - docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions

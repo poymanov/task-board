@@ -223,7 +223,7 @@ func (a *App) initDeps(ctx context.Context) error {
 }
 
 func (a *App) initLogger(_ context.Context) error {
-	logger.InitLogger(a.config.Logger.Level())
+	logger.InitLogger(a.config.Logger.Level(), a.config.Logger.AppName())
 
 	return nil
 }

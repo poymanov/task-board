@@ -13,6 +13,18 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:${LOKI_INTERNAL_PORT}/loki/api/v1/push"
+        loki-pipeline-stages: |
+          - json:
+              expressions:
+                app_name: app_name
+                level: level
+          - labels:
+              app_name:
+              level:
   postgres-board:
     image: postgres:17.0-alpine3.20
     volumes:
@@ -40,6 +52,18 @@ services:
     depends_on:
       postgres-auth:
         condition: service_healthy
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:${LOKI_INTERNAL_PORT}/loki/api/v1/push"
+        loki-pipeline-stages: |
+          - json:
+              expressions:
+                app_name: app_name
+                level: level
+          - labels:
+              app_name:
+              level:
   postgres-auth:
     image: postgres:17.0-alpine3.20
     volumes:
@@ -64,6 +88,18 @@ services:
     volumes:
       - '.:/app'
     command: ["go", "run", "gateway/cmd/main.go"]
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:${LOKI_INTERNAL_PORT}/loki/api/v1/push"
+        loki-pipeline-stages: |
+          - json:
+              expressions:
+                app_name: app_name
+                level: level
+          - labels:
+              app_name:
+              level:
   notification:
     build:
       context: .
@@ -74,6 +110,25 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:${LOKI_INTERNAL_PORT}/loki/api/v1/push"
+        loki-pipeline-stages: |
+          - json:
+              expressions:
+                app_name: app_name
+                level: level
+          - labels:
+              app_name:
+              level:
+  loki:
+    image: grafana/loki:3.7
+    ports:
+      - "${LOKI_EXTERNAL_PORT}:${LOKI_INTERNAL_PORT}"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./docker/common/loki/loki.yaml:/etc/loki/local-config.yaml
   kafka:
     image: confluentinc/cp-kafka:7.9.0
     ports:
@@ -124,6 +179,20 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
+  grafana:
+    image: grafana/grafana:13.0.0-23649747481
+    volumes:
+      - ./docker/common/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./docker/common/grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/default.json
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor traceQLStreaming metricsSummary
+    ports:
+      - '${GRAFANA_UI_PORT}:3000'
 volumes:
   postgres_board_data:
   postgres_auth_data:

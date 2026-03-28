@@ -8,6 +8,7 @@ type GrpcConfig interface {
 
 type LoggerConfig interface {
 	Level() string
+	AppName() string
 }
 
 type DbConfig interface {

@@ -107,7 +107,7 @@ func (a *App) InitConfig(ctx context.Context) error {
 }
 
 func (a *App) InitLogger(_ context.Context) error {
-	logger.InitLogger(a.config.Logger.Level())
+	logger.InitLogger(a.config.Logger.Level(), a.config.Logger.AppName())
 
 	return nil
 }
