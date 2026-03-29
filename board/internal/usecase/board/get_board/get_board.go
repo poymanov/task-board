@@ -7,6 +7,7 @@ import (
 	domainColumn "github.com/poymanov/codemania-task-board/board/internal/domain/column"
 	domainCommon "github.com/poymanov/codemania-task-board/board/internal/domain/common"
 	domainTask "github.com/poymanov/codemania-task-board/board/internal/domain/task"
+	"github.com/poymanov/codemania-task-board/platform/pkg/otel/tracer"
 )
 
 type UseCase struct {
@@ -28,6 +29,9 @@ func NewUseCase(
 }
 
 func (u *UseCase) GetBoard(ctx context.Context, id int) (domainCommon.Board, error) {
+	ctx, span := tracer.Start(ctx, "GetBoard useCase")
+	defer span.End()
+
 	board, err := u.boardRepository.GetById(ctx, id)
 	if err != nil {
 		return domainCommon.Board{}, err

@@ -8,6 +8,7 @@ import (
 
 	"github.com/poymanov/codemania-task-board/gateway/internal/infrastructure/security"
 	"github.com/poymanov/codemania-task-board/gateway/internal/usecase/board/create"
+	"github.com/poymanov/codemania-task-board/platform/pkg/otel/tracer"
 	gatewayV1 "github.com/poymanov/codemania-task-board/shared/pkg/openapi/gateway/v1"
 	"github.com/rs/zerolog/log"
 )
@@ -63,6 +64,9 @@ func (a *Api) BoardGetAll(ctx context.Context) (gatewayV1.BoardGetAllRes, error)
 }
 
 func (a *Api) BoardGet(ctx context.Context, params gatewayV1.BoardGetParams) (gatewayV1.BoardGetRes, error) {
+	ctx, span := tracer.Start(ctx, "GetBoard http handler")
+	defer span.End()
+
 	reqStart := time.Now()
 	board, err := a.boardGetBoardUseCase.Get(ctx, params.ID)
 	status := http.StatusOK

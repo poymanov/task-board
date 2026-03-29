@@ -204,6 +204,15 @@ services:
       - ./docker/common/prometheus/prometheus.yaml:/etc/prometheus.yaml
     ports:
       - '${PROMETHEUS_UI_PORT}:9090'
+  tempo:
+    image: grafana/tempo:2.9.1
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./docker/common/tempo/tempo.yaml:/etc/tempo.yaml
+    ports:
+      - "${TEMPO_PORT_1}:3200"
+      - "${TEMPO_PORT_2}:4317"
+      - "${TEMPO_PORT_3}:4318"
 volumes:
   postgres_board_data:
   postgres_auth_data:

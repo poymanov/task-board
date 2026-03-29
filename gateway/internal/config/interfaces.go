@@ -22,3 +22,9 @@ type GrpcClientConfig interface {
 	BoardAddress() string
 	AuthAddress() string
 }
+
+type OtelConfig interface {
+	Endpoint() string
+	Namespace() string
+	InstanceID() string
+}

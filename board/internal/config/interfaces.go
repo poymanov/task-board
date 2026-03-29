@@ -28,3 +28,9 @@ type OutboxEventConfig interface {
 	CheckNotProcessedTaskInterval() time.Duration
 	CheckNotProcessedTaskLimit() int
 }
+
+type OtelConfig interface {
+	Endpoint() string
+	Namespace() string
+	InstanceID() string
+}

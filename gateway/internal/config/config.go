@@ -12,6 +12,7 @@ type Config struct {
 	Http        HttpConfig
 	HttpMetrics HttpMetricsConfig
 	GrpcClient  GrpcClientConfig
+	Otel        OtelConfig
 }
 
 func Load(path ...string) (*Config, error) {
@@ -41,10 +42,16 @@ func Load(path ...string) (*Config, error) {
 		return nil, err
 	}
 
+	otel, err := env.NewOtelConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
 		Logger:      loggerCfg,
 		Http:        httpCfg,
 		HttpMetrics: httpMetricsCfg,
 		GrpcClient:  grpcClient,
+		Otel:        otel,
 	}, nil
 }

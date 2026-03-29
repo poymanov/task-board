@@ -37,9 +37,11 @@ import (
 	"github.com/poymanov/codemania-task-board/platform/pkg/grpc/health"
 	"github.com/poymanov/codemania-task-board/platform/pkg/logger"
 	"github.com/poymanov/codemania-task-board/platform/pkg/migrator"
+	"github.com/poymanov/codemania-task-board/platform/pkg/otel"
 	boardV1 "github.com/poymanov/codemania-task-board/shared/pkg/proto/board/v1"
 	"github.com/rs/zerolog/log"
 	"github.com/segmentio/kafka-go"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -144,6 +146,7 @@ func (a *App) InitDeps(ctx context.Context) error {
 		a.InitLogger,
 		a.InitDB,
 		a.initListener,
+		a.initOtel,
 	}
 
 	for _, f := range inits {
@@ -199,6 +202,21 @@ func (a *App) initListener(_ context.Context) error {
 
 			return lerr
 		}
+
+		return nil
+	})
+
+	return nil
+}
+
+func (a *App) initOtel(ctx context.Context) error {
+	err := otel.Init(ctx, "board", a.config.Otel.Endpoint(), a.config.Otel.Namespace(), a.config.Otel.InstanceID())
+	if err != nil {
+		return err
+	}
+
+	a.closer = append(a.closer, func() error {
+		otel.Close()
 
 		return nil
 	})
@@ -292,7 +310,9 @@ func (a *App) runGrpcServer() {
 
 	taskService := transportTaskV1.NewService(tcuc, tgauc, tduc, tupuc)
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
+	)
 
 	boardV1.RegisterBoardServiceServer(s, boardService)
 	boardV1.RegisterColumnServiceServer(s, columnService)

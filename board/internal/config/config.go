@@ -14,6 +14,7 @@ type Config struct {
 	Kafka               KafkaConfig
 	TaskChangedProducer TaskChangedProducerConfig
 	OutboxEvent         OutboxEventConfig
+	Otel                OtelConfig
 }
 
 func Load(path ...string) (*Config, error) {
@@ -53,6 +54,11 @@ func Load(path ...string) (*Config, error) {
 		return nil, err
 	}
 
+	otel, err := env.NewOtelConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
 		Grpc:                grpcCfg,
 		Logger:              loggerCfg,
@@ -60,5 +66,6 @@ func Load(path ...string) (*Config, error) {
 		Kafka:               kafka,
 		TaskChangedProducer: taskChangedProducer,
 		OutboxEvent:         outboxEvent,
+		Otel:                otel,
 	}, nil
 }

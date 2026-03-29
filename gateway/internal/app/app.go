@@ -35,12 +35,14 @@ import (
 	taskUpdatePositionUseCase "github.com/poymanov/codemania-task-board/gateway/internal/usecase/task/update_position"
 	"github.com/poymanov/codemania-task-board/platform/pkg/logger"
 	"github.com/poymanov/codemania-task-board/platform/pkg/metrics"
+	"github.com/poymanov/codemania-task-board/platform/pkg/otel"
 	gatewayV1 "github.com/poymanov/codemania-task-board/shared/pkg/openapi/gateway/v1"
 	authV1 "github.com/poymanov/codemania-task-board/shared/pkg/proto/auth/v1"
 	boardV1 "github.com/poymanov/codemania-task-board/shared/pkg/proto/board/v1"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog/log"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -138,6 +140,21 @@ func (a *App) initConfig(ctx context.Context) error {
 	return nil
 }
 
+func (a *App) initOtel(ctx context.Context) error {
+	err := otel.Init(ctx, "gateway", a.config.Otel.Endpoint(), a.config.Otel.Namespace(), a.config.Otel.InstanceID())
+	if err != nil {
+		return err
+	}
+
+	a.closer = append(a.closer, func() error {
+		otel.Close()
+
+		return nil
+	})
+
+	return nil
+}
+
 func (a *App) initGrpcClients(ctx context.Context) error {
 	if _, ok := ctx.Deadline(); !ok {
 		var cancel context.CancelFunc
@@ -153,6 +170,7 @@ func (a *App) initGrpcClients(ctx context.Context) error {
 		connBoard, err := grpc.NewClient(
 			a.config.GrpcClient.BoardAddress(),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 		)
 		if err != nil {
 			clientErr = fmt.Errorf("failed to connect board grpc: %w", err)
@@ -228,6 +246,7 @@ func (a *App) initDeps(ctx context.Context) error {
 		a.initLogger,
 		a.initGrpcClients,
 		a.initHttpMetrics,
+		a.initOtel,
 	}
 
 	for _, f := range inits {

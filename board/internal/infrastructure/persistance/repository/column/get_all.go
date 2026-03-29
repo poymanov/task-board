@@ -7,9 +7,13 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	domainColumn "github.com/poymanov/codemania-task-board/board/internal/domain/column"
+	"github.com/poymanov/codemania-task-board/platform/pkg/otel/tracer"
 )
 
 func (r *Repository) GetAll(ctx context.Context, filter domainColumn.GetAllFilter, sort domainColumn.GetAllSort) ([]domainColumn.Column, error) {
+	ctx, span := tracer.Start(ctx, "Column repository: get all by filter")
+	defer span.End()
+
 	query, args := getQuery(filter, sort)
 
 	rows, err := r.pool.Query(ctx, query, args...)

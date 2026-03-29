@@ -7,9 +7,13 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	domainTask "github.com/poymanov/codemania-task-board/board/internal/domain/task"
+	"github.com/poymanov/codemania-task-board/platform/pkg/otel/tracer"
 )
 
 func (r *Repository) GetAll(ctx context.Context, filter domainTask.GetAllFilter, sort domainTask.GetAllSort) ([]domainTask.Task, error) {
+	ctx, span := tracer.Start(ctx, "Task repository: get all by filter")
+	defer span.End()
+
 	query, args := getQuery(filter, sort)
 
 	rows, err := r.pool.Query(ctx, query, args...)
